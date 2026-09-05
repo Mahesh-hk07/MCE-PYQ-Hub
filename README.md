@@ -155,7 +155,7 @@ python server.py
 ```
 - **Local Web Portal**: `http://localhost:8000`
 - **Admin Login**: `http://localhost:8000/admin/login`
-  - Default Admin: `admin@mce.ac.in` / `MCEAdmin2026!`
+  - 
 
 ---
 
