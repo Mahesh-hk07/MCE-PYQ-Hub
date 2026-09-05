@@ -161,4 +161,4 @@ python server.py
 
 ## 👥 Authors & Acknowledgments
 - **Developer**: Built with passion for the students of **Malnad College of Engineering (MCE), Hassan**.
-- Powered by Google Antigravity.
+
