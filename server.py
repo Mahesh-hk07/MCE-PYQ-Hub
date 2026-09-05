@@ -1259,6 +1259,8 @@ def get_local_ip():
 
 
 def kill_existing_port_listeners(port=8000):
+    if os.name != 'nt':
+        return
     try:
         import subprocess
         output = subprocess.check_output(f"netstat -ano | findstr :{port}", shell=True).decode()
@@ -1278,17 +1280,18 @@ def kill_existing_port_listeners(port=8000):
 
 
 if __name__ == "__main__":
-    kill_existing_port_listeners(8000)
+    port = int(os.environ.get("PORT", 8000))
+    kill_existing_port_listeners(port)
     initialize_database()
     host_ip = get_local_ip()
     ThreadingHTTPServer.daemon_threads = True
     ThreadingHTTPServer.allow_reuse_address = False
-    server = ThreadingHTTPServer(("0.0.0.0", 8000), RequestHandler)
+    server = ThreadingHTTPServer(("0.0.0.0", port), RequestHandler)
     print("==================================================================")
-    print("[SERVER] MCE PYQ Hub Server Active")
-    print(f"[PC]     Local Computer:               http://localhost:8000")
-    print(f"[PHONE]  Phone (Same Wi-Fi / Hotspot): http://{host_ip}:8000")
-    print(f"[ADMIN]  Admin Portal Login:           http://localhost:8000/admin/login")
+    print(f"[SERVER] MCE PYQ Hub Server Active on port {port}")
+    print(f"[PC]     Local Computer:               http://localhost:{port}")
+    print(f"[PHONE]  Phone (Same Wi-Fi / Hotspot): http://{host_ip}:{port}")
+    print(f"[ADMIN]  Admin Portal Login:           http://localhost:{port}/admin/login")
     print(f"[ADMIN]  Admin Dashboard:              http://localhost:8000/admin/dashboard")
     print("==================================================================")
     try:

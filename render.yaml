@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: mce-pyq-hub
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.8
+      - key: COHERE_API_KEY
+        sync: false
