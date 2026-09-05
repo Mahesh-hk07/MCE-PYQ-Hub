@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCE Library Admin Dashboard - MCE PYQ Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=17.0">
+    <link rel="stylesheet" href="/admin.css?v=1.0">
+    <!-- Immediate PWA & Cache Purge Killswitch -->
+    <script>
+        (function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    for (var i = 0; i < regs.length; i++) { regs[i].unregister(); }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(keys) {
+                    for (var i = 0; i < keys.length; i++) { caches.delete(keys[i]); }
+                });
+            }
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        })();
+    </script>
+</head>
+
+<body class="admin-body">
+
+    <div class="admin-dashboard-layout">
+        <!-- ================= SIDEBAR NAVIGATION ================= -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <img src="/mce-logo.png" alt="MCE Logo" class="sidebar-logo">
+                <div class="sidebar-brand-text">
+                    <h3>MCE PYQ Hub</h3>
+                    <span>Library Administration</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-label">Main Menu</div>
+                <button type="button" class="sidebar-link active" data-tab="overview">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Dashboard Overview</span>
+                </button>
+
+                <button type="button" class="sidebar-link" data-tab="papers">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <span>Question Papers</span>
+                    <span class="sidebar-badge badge-green" id="sidebarPapersBadge">0</span>
+                </button>
+
+                <button type="button" class="sidebar-link" data-tab="upload">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Add Question Paper</span>
+                </button>
+
+                <div class="nav-section-label">Academic Structure</div>
+                <button type="button" class="sidebar-link" data-tab="departments">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="21" x2="21" y2="21"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <polyline points="5 6 12 3 19 6"></polyline>
+                        <line x1="4" y1="10" x2="4" y2="21"></line>
+                        <line x1="20" y1="10" x2="20" y2="21"></line>
+                        <line x1="8" y1="14" x2="8" y2="17"></line>
+                        <line x1="12" y1="14" x2="12" y2="17"></line>
+                        <line x1="16" y1="14" x2="16" y2="17"></line>
+                    </svg>
+                    <span>Departments (8)</span>
+                </button>
+
+                <button type="button" class="sidebar-link" data-tab="subjects">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                    <span>Subjects Directory</span>
+                </button>
+
+                <div class="nav-section-label">Student Interactions</div>
+                <button type="button" class="sidebar-link" data-tab="requests">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <span>Student Demands</span>
+                    <span class="sidebar-badge" id="sidebarRequestsBadge">0</span>
+                </button>
+
+                <button type="button" class="sidebar-link" data-tab="submissions" id="navSubmissionsBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline>
+                        <path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>
+                    </svg>
+                    <span>Student Submissions</span>
+                    <span class="sidebar-badge badge-green" id="sidebarSubmissionsBadge">0</span>
+                </button>
+
+                <div class="nav-section-label">Administration</div>
+                <button type="button" class="sidebar-link" data-tab="users">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Manage Admins</span>
+                </button>
+
+                <button type="button" class="sidebar-link" data-tab="logs">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                    <span>Activity Audit Logs</span>
+                </button>
+
+                <button type="button" class="sidebar-link" data-tab="system">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    <span>System Settings</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="admin-user-pill">
+                    <div class="admin-avatar" id="adminUserAvatar">A</div>
+                    <div class="admin-meta">
+                        <div class="admin-meta-name" id="adminUserEmail">admin@mce.ac.in</div>
+                        <div class="admin-meta-role">
+                            <span class="online-dot"></span>
+                            <span>Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ================= MAIN CONTENT WORKSPACE ================= -->
+        <div class="admin-main-wrapper">
+            <!-- Topbar Header -->
+            <header class="admin-topbar">
+                <div class="topbar-left">
+                    <button type="button" class="btn-sidebar-toggle" id="sidebarToggle" title="Toggle Navigation Sidebar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <div class="topbar-title-wrap">
+                        <h2 id="currentTabTitle">Dashboard Overview</h2>
+                        <span id="currentTabSubtitle">Malnad College of Engineering - Autonomous Library Database</span>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <a href="/" target="_blank" class="btn-topbar-action" title="Open student-facing website">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        <span>Student View</span>
+                    </a>
+
+                    <button type="button" id="themeToggleBtn" class="btn-topbar-action" title="Toggle Night Study Mode">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                        <span>Night Mode</span>
+                    </button>
+
+                    <button type="button" id="adminLogoutBtn" class="btn-topbar-action btn-logout" title="Sign out of Admin Portal">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Main Content Container -->
+            <main class="admin-content">
+
+                <!-- TAB 1: OVERVIEW -->
+                <section id="tab-overview" class="admin-tab-view active">
+                    <div class="overview-stats-grid">
+                        <div class="overview-card">
+                            <div class="overview-card-info">
+                                <div class="label">Total Question Papers</div>
+                                <div class="number" id="overviewTotalPapers">0</div>
+                            </div>
+                            <div class="overview-card-icon" style="background: #eff6ff; color: #2563eb;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="overview-card-info">
+                                <div class="label">Active Branches</div>
+                                <div class="number" id="overviewBranches">8</div>
+                            </div>
+                            <div class="overview-card-icon" style="background: #ecfdf5; color: #10b981;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="5 6 12 3 19 6"></polyline>
+                                    <line x1="3" y1="21" x2="21" y2="21"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="overview-card-info">
+                                <div class="label">Subjects Covered</div>
+                                <div class="number" id="overviewSubjects">0</div>
+                            </div>
+                            <div class="overview-card-icon" style="background: #fffbeb; color: #d97706;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                    <polyline points="2 17 12 22 22 17"></polyline>
+                                    <polyline points="2 12 12 17 22 12"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <div class="overview-card">
+                            <div class="overview-card-info">
+                                <div class="label">Pending Requests</div>
+                                <div class="number" id="overviewRequests" style="color: #ef4444;">0</div>
+                            </div>
+                            <div class="overview-card-icon" style="background: #fef2f2; color: #ef4444;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Shortcuts -->
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+                        <div class="admin-panel">
+                            <div class="panel-header">
+                                <div class="panel-header-title">
+                                    <h3>Quick Publishing Actions</h3>
+                                    <p>Fast shortcuts to upload, source student papers, or manage administrators.</p>
+                                </div>
+                            </div>
+                            <div class="panel-body" style="display: flex; gap: 14px; flex-wrap: wrap;">
+                                <button type="button" class="btn-admin-signin" onclick="switchAdminTab('upload')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    <span>Upload New Question Paper</span>
+                                </button>
+                                <button type="button" class="btn-topbar-action" style="padding: 12px 18px;" onclick="switchAdminTab('requests')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"></path>
+                                    </svg>
+                                    <span>Review Student Demands (<span id="btnReqCount">0</span>)</span>
+                                </button>
+                                <button type="button" class="btn-topbar-action" style="padding: 12px 18px;" onclick="switchAdminTab('papers')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    </svg>
+                                    <span>Browse All Question Papers</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="admin-panel">
+                            <div class="panel-header">
+                                <div class="panel-header-title">
+                                    <h3>System Status</h3>
+                                    <p>Live health &amp; database verification</p>
+                                </div>
+                            </div>
+                            <div class="panel-body" style="font-size: 13px; display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--admin-text-muted);">Database Status:</span>
+                                    <strong style="color: #10b981;">Online (SQLite3)</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--admin-text-muted);">Autonomous Scheme:</span>
+                                    <strong>2022 / 2021 CBCS</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--admin-text-muted);">Security Mode:</span>
+                                    <strong style="color: #2563eb;">PBKDF2-HMAC (Salted)</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Papers Preview Table -->
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Recently Published Question Papers</h3>
+                                <p>Latest examination documents added to the repository.</p>
+                            </div>
+                            <button type="button" class="btn-topbar-action" onclick="switchAdminTab('papers')">View All &rarr;</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="admin-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Branch</th>
+                                        <th>Semester</th>
+                                        <th>Subject</th>
+                                        <th>Year</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentPapersTableBody">
+                                    <tr><td colspan="6" style="text-align: center; color: var(--admin-text-muted);">Loading recently added papers...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: QUESTION PAPERS REPOSITORY -->
+                <section id="tab-papers" class="admin-tab-view">
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Question Papers Repository</h3>
+                                <p>Search, preview, modify metadata, or permanently remove previous year papers.</p>
+                            </div>
+                            <div style="font-size: 13px; font-weight: 700;">
+                                <span id="papersFilteredCount" style="color: var(--admin-primary);">0</span> Papers Found
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+                            <!-- Search & Filter Controls -->
+                            <div class="admin-table-toolbar">
+                                <div class="search-box-wrap">
+                                    <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="11" cy="11" r="8"></circle>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    </svg>
+                                    <input type="text" id="paperSearchInput" placeholder="Search by paper title, subject name, year...">
+                                    <button type="button" id="btnClearSearch" class="btn-search-clear" style="display: none;">✕</button>
+                                </div>
+
+                                <div class="filter-selects-group">
+                                    <select id="filterBranchSelect" class="admin-filter-select">
+                                        <option value="">All Branches</option>
+                                        <option value="CSE">CSE</option>
+                                        <option value="CSE(AI&ML)">CSE (AI & ML)</option>
+                                        <option value="CSBS">CSBS</option>
+                                        <option value="ECE">ECE</option>
+                                        <option value="EEE">EEE</option>
+                                        <option value="Mechanical">Mechanical</option>
+                                        <option value="Civil">Civil</option>
+                                        <option value="First Year">First Year</option>
+                                    </select>
+
+                                    <select id="filterSemesterSelect" class="admin-filter-select">
+                                        <option value="">All Semesters</option>
+                                        <option value="1st Semester">1st Semester</option>
+                                        <option value="2nd Semester">2nd Semester</option>
+                                        <option value="3rd Semester">3rd Semester</option>
+                                        <option value="4th Semester">4th Semester</option>
+                                        <option value="5th Semester">5th Semester</option>
+                                        <option value="6th Semester">6th Semester</option>
+                                        <option value="7th Semester">7th Semester</option>
+                                        <option value="8th Semester">8th Semester</option>
+                                    </select>
+
+                                    <select id="filterYearSelect" class="admin-filter-select">
+                                        <option value="">All Years</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2020">2020</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Branch Quick Filter Pills -->
+                            <div class="branch-pills-row" id="branchPillsRow">
+                                <button type="button" class="btn-branch-pill active" data-branch="">All</button>
+                                <button type="button" class="btn-branch-pill" data-branch="CSE">💻 CSE</button>
+                                <button type="button" class="btn-branch-pill" data-branch="CSE(AI&ML)">🤖 AI &amp; ML</button>
+                                <button type="button" class="btn-branch-pill" data-branch="CSBS">📊 CSBS</button>
+                                <button type="button" class="btn-branch-pill" data-branch="ECE">📡 ECE</button>
+                                <button type="button" class="btn-branch-pill" data-branch="EEE">⚡ EEE</button>
+                                <button type="button" class="btn-branch-pill" data-branch="Mechanical">⚙️ Mech</button>
+                                <button type="button" class="btn-branch-pill" data-branch="Civil">🏗️ Civil</button>
+                                <button type="button" class="btn-branch-pill" data-branch="First Year">📚 1st Year</button>
+                            </div>
+
+                            <!-- Bulk Selection Bar -->
+                            <div class="bulk-toolbar-bar">
+                                <label class="bulk-select-all-label">
+                                    <input type="checkbox" id="selectAllCheckbox">
+                                    <span id="selectAllLabel">Select All</span>
+                                </label>
+
+                                <div class="bulk-actions-group" id="bulkActionsGroup" style="display: none;">
+                                    <span class="bulk-selected-pill" id="bulkCountPill">0 Selected</span>
+                                    <button type="button" class="btn-bulk-delete-action" id="btnBatchDelete">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        </svg>
+                                        <span>Delete Selected</span>
+                                    </button>
+                                    <button type="button" class="btn-topbar-action" style="padding: 5px 10px;" id="btnClearBulk">Clear</button>
+                                </div>
+
+                                <button type="button" class="btn-bulk-delete-action" style="background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); margin-left: auto;" id="btnClearEntireRepo" onclick="promptClearEntireRepo()">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                    <span>Delete All Papers</span>
+                                </button>
+                            </div>
+
+                            <!-- Papers Table -->
+                            <div class="table-responsive">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 40px;"></th>
+                                            <th>Paper Title / Scheme</th>
+                                            <th>Branch</th>
+                                            <th>Semester</th>
+                                            <th>Subject</th>
+                                            <th>Code</th>
+                                            <th>Year</th>
+                                            <th>Exam Type</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="allPapersTableBody">
+                                        <tr><td colspan="9" style="text-align: center; color: var(--admin-text-muted);">Loading question papers repository...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination / Count Footer -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 18px; font-size: 13px; color: var(--admin-text-muted);">
+                                <span>Showing <strong id="showingPapersCount">0</strong> question papers</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: ADD QUESTION PAPER -->
+                <section id="tab-upload" class="admin-tab-view">
+                    <div class="admin-panel" style="max-width: 900px; margin: 0 auto;">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Publish New Question Paper</h3>
+                                <p>Upload an official examination PDF document and tag it with syllabus metadata.</p>
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+                            <form id="uploadPaperForm" enctype="multipart/form-data">
+                                <div class="upload-form-grid">
+                                    <div class="admin-form-group">
+                                        <label for="uploadBranch">Engineering Branch *</label>
+                                        <select id="uploadBranch" name="branch" class="admin-form-control" required>
+                                            <option value="">Select Department Branch</option>
+                                            <option value="CSE">💻 Computer Science &amp; Engineering (CSE)</option>
+                                            <option value="CSE(AI&ML)">🤖 CSE (Artificial Intelligence &amp; ML)</option>
+                                            <option value="CSBS">📊 CS &amp; Business Systems (CSBS)</option>
+                                            <option value="ECE">📡 Electronics &amp; Communication (ECE)</option>
+                                            <option value="EEE">⚡ Electrical &amp; Electronics (EEE)</option>
+                                            <option value="Mechanical">⚙️ Mechanical Engineering</option>
+                                            <option value="Civil">🏗️ Civil Engineering</option>
+                                            <option value="First Year">📚 First Year Engineering (1st &amp; 2nd Sem)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="admin-form-group">
+                                        <label for="uploadSemester">Semester *</label>
+                                        <select id="uploadSemester" name="semester" class="admin-form-control" required>
+                                            <option value="">Select Semester</option>
+                                            <option value="1st Semester">1st Semester</option>
+                                            <option value="2nd Semester">2nd Semester</option>
+                                            <option value="3rd Semester">3rd Semester</option>
+                                            <option value="4th Semester">4th Semester</option>
+                                            <option value="5th Semester">5th Semester</option>
+                                            <option value="6th Semester">6th Semester</option>
+                                            <option value="7th Semester">7th Semester</option>
+                                            <option value="8th Semester">8th Semester</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="admin-form-group">
+                                        <label for="uploadSubject">Subject / Course Name *</label>
+                                        <input type="text" id="uploadSubject" name="subject" class="admin-form-control" placeholder="e.g. Mathematics, Machine Learning, Operating Systems" required>
+                                    </div>
+
+                                    <div class="admin-form-group">
+                                        <label for="uploadSubjectCode">Subject Code (Optional)</label>
+                                        <input type="text" id="uploadSubjectCode" name="subject_code" class="admin-form-control" placeholder="e.g. 21CS51, 22MAT11">
+                                    </div>
+
+                                    <div class="admin-form-group">
+                                        <label for="uploadYear">Examination Year *</label>
+                                        <input type="number" id="uploadYear" name="year" class="admin-form-control" min="2000" max="2035" placeholder="2025" required>
+                                    </div>
+
+                                    <div class="admin-form-group">
+                                        <label for="uploadExamType">Exam Type *</label>
+                                        <select id="uploadExamType" name="exam_type" class="admin-form-control" required>
+                                            <option value="Autonomous SEE Exam">Autonomous SEE Examination (Semester End)</option>
+                                            <option value="Continuous Internal Evaluation (CIE)">Continuous Internal Evaluation (CIE / Mid-Term)</option>
+                                            <option value="Supplementary / Makeup Exam">Supplementary / Makeup Examination</option>
+                                            <option value="Model Question Paper">Model Question Paper</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="admin-form-group form-full-width">
+                                        <label for="uploadTitle">Paper Title / Examination Scheme *</label>
+                                        <input type="text" id="uploadTitle" name="title" class="admin-form-control" placeholder="e.g. Machine Learning Jan 2025 Autonomous Scheme" required>
+                                    </div>
+
+                                    <div class="admin-form-group form-full-width">
+                                        <label>Question Paper PDF Document *</label>
+                                        <div class="file-dropzone" id="fileDropzone">
+                                            <input type="file" id="uploadFileInput" name="file" accept="application/pdf,.pdf" required>
+                                            <div class="dropzone-icon">📄</div>
+                                            <div class="dropzone-title">Click to browse or drop PDF here</div>
+                                            <div class="dropzone-hint">Strictly PDF documents up to 25 MB</div>
+                                            <div class="dropzone-selected-file" id="dropzoneSelectedFile"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 24px; display: flex; align-items: center; justify-content: flex-end; gap: 14px;">
+                                    <button type="reset" class="btn-topbar-action" style="padding: 11px 20px;">Reset Form</button>
+                                    <button type="submit" id="btnPublishPaper" class="btn-admin-signin">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                            <polyline points="17 8 12 3 7 8"></polyline>
+                                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                                        </svg>
+                                        <span>Publish Paper to Repository</span>
+                                    </button>
+                                </div>
+
+                                <div id="uploadAlertBanner" class="admin-alert-banner" style="display: none;"></div>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: DEPARTMENTS -->
+                <section id="tab-departments" class="admin-tab-view">
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Engineering Departments &amp; Branches</h3>
+                                <p>Repository distribution across all engineering branches at Malnad College of Engineering.</p>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="departments-grid" id="departmentsGrid">
+                                <!-- Dynamically filled -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 5: SUBJECTS DIRECTORY -->
+                <section id="tab-subjects" class="admin-tab-view">
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Subjects Directory</h3>
+                                <p>Catalog of all subjects currently holding previous-year question papers.</p>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject / Course Name</th>
+                                            <th>Department / Branch</th>
+                                            <th>Semesters Active</th>
+                                            <th>Paper Count</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="subjectsTableBody">
+                                        <tr><td colspan="5" style="text-align: center; color: var(--admin-text-muted);">Loading subjects catalog...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 6: STUDENT DEMANDS (PAPER REQUESTS) -->
+                <section id="tab-requests" class="admin-tab-view">
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Student Question Paper Demands</h3>
+                                <p>Past examination papers explicitly requested by students that need to be sourced and uploaded.</p>
+                            </div>
+                            <span class="sidebar-badge" id="requestsCountHeader">0 Pending</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student Name</th>
+                                            <th>Branch</th>
+                                            <th>Semester</th>
+                                            <th>Subject Requested</th>
+                                            <th>Exam Year</th>
+                                            <th>Exam Type</th>
+                                            <th>Notes</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="requestsTableBody">
+                                        <tr><td colspan="9" style="text-align: center; color: var(--admin-text-muted);">Loading student requests...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 7: STUDENT SUBMISSIONS (PENDING APPROVAL) -->
+                <section id="tab-submissions" class="admin-tab-view">
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Student Paper Contributions</h3>
+                                <p>Review papers submitted by students before publishing them to the public repository.</p>
+                            </div>
+                            <span class="sidebar-badge badge-green" id="submissionsCountHeader">0 Submissions</span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Contributor</th>
+                                            <th>Branch</th>
+                                            <th>Semester</th>
+                                            <th>Subject</th>
+                                            <th>Title</th>
+                                            <th>Year</th>
+                                            <th>File</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="submissionsTableBody">
+                                        <tr><td colspan="8" style="text-align: center; color: var(--admin-text-muted);">No pending student submissions.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 8: MANAGE ADMIN USERS -->
+                <section id="tab-users" class="admin-tab-view">
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                        <div class="admin-panel">
+                            <div class="panel-header">
+                                <div class="panel-header-title">
+                                    <h3>Authorized Administrators</h3>
+                                    <p>Users who have permission to upload, edit, and delete repository materials.</p>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="admin-data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Email / Username</th>
+                                                <th>Role</th>
+                                                <th>Date Added</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="adminUsersTableBody">
+                                            <tr><td colspan="4" style="text-align: center; color: var(--admin-text-muted);">Loading admin accounts...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add New Admin & Change Password -->
+                        <div style="display: flex; flex-direction: column; gap: 24px;">
+                            <div class="admin-panel">
+                                <div class="panel-header">
+                                    <div class="panel-header-title">
+                                        <h3>Create New Administrator</h3>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <form id="createAdminForm">
+                                        <div class="admin-form-group" style="margin-bottom: 12px;">
+                                            <label>Full Name *</label>
+                                            <input type="text" id="newAdminName" class="admin-form-control" placeholder="e.g. Prof. Kumar" required>
+                                        </div>
+                                        <div class="admin-form-group" style="margin-bottom: 12px;">
+                                            <label>Email Address *</label>
+                                            <input type="email" id="newAdminEmail" class="admin-form-control" placeholder="staff@mce.ac.in" required>
+                                        </div>
+                                        <div class="admin-form-group" style="margin-bottom: 16px;">
+                                            <label>Temporary Password *</label>
+                                            <input type="password" id="newAdminPassword" class="admin-form-control" placeholder="Minimum 6 characters" required>
+                                        </div>
+                                        <button type="submit" class="btn-admin-signin" style="width: 100%;">Create Account</button>
+                                        <div id="createAdminAlert" class="admin-alert-banner" style="display: none;"></div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="admin-panel">
+                                <div class="panel-header">
+                                    <div class="panel-header-title">
+                                        <h3>Change Master Password</h3>
+                                    </div>
+                                </div>
+                                <div class="panel-body">
+                                    <form id="changePasswordForm">
+                                        <div class="admin-form-group" style="margin-bottom: 16px;">
+                                            <label>New Administrator Password *</label>
+                                            <input type="password" id="changeNewPassword" class="admin-form-control" placeholder="Enter strong new password" required>
+                                        </div>
+                                        <button type="submit" class="btn-topbar-action" style="width: 100%; justify-content: center; padding: 11px;">Update Password</button>
+                                        <div id="changePasswordAlert" class="admin-alert-banner" style="display: none;"></div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 9: ACTIVITY AUDIT LOGS -->
+                <section id="tab-logs" class="admin-tab-view">
+                    <div class="admin-panel">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>Security &amp; Activity Audit Logs</h3>
+                                <p>Real-time audit trail of all administrative logins, uploads, edits, and deletions.</p>
+                            </div>
+                            <button type="button" class="btn-topbar-action" onclick="loadActivityLogs()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="23 4 23 10 17 10"></polyline>
+                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                </svg>
+                                <span>Refresh Logs</span>
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="admin-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Timestamp</th>
+                                            <th>Administrator</th>
+                                            <th>Action Performed</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="logsTableBody">
+                                        <tr><td colspan="4" style="text-align: center; color: var(--admin-text-muted);">Loading audit logs...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 10: SYSTEM SETTINGS -->
+                <section id="tab-system" class="admin-tab-view">
+                    <div class="admin-panel" style="max-width: 800px;">
+                        <div class="panel-header">
+                            <div class="panel-header-title">
+                                <h3>System Architecture &amp; Database Information</h3>
+                                <p>Details of server runtime and storage configuration.</p>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="display: flex; flex-direction: column; gap: 16px;">
+                            <div style="border-bottom: 1px solid var(--admin-border); padding-bottom: 12px;">
+                                <h4 style="margin: 0 0 4px; font-size: 14px;">Institution</h4>
+                                <p style="margin: 0; color: var(--admin-text-muted); font-size: 13px;">Malnad College of Engineering, Hassan (Autonomous Institution Affiliated to VTU)</p>
+                            </div>
+                            <div style="border-bottom: 1px solid var(--admin-border); padding-bottom: 12px;">
+                                <h4 style="margin: 0 0 4px; font-size: 14px;">Server Engine</h4>
+                                <p style="margin: 0; color: var(--admin-text-muted); font-size: 13px;">Python 3.12 Multi-threaded HTTP Server with SQLite3 Storage Engines</p>
+                            </div>
+                            <div style="border-bottom: 1px solid var(--admin-border); padding-bottom: 12px;">
+                                <h4 style="margin: 0 0 4px; font-size: 14px;">Authentication Mechanism</h4>
+                                <p style="margin: 0; color: var(--admin-text-muted); font-size: 13px;">PBKDF2-HMAC-SHA256 (100,000 iterations) with 16-byte cryptographic salt and HttpOnly SameSite Session Cookies</p>
+                            </div>
+                            <div>
+                                <h4 style="margin: 0 0 4px; font-size: 14px;">Database Directories</h4>
+                                <p style="margin: 0; color: var(--admin-text-muted); font-size: 13px;"><code>databases/cse.db</code>, <code>ece.db</code>, <code>mechanical.db</code>, <code>users.db</code>, <code>requests.db</code></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- 1. EDIT PAPER MODAL -->
+    <div class="admin-modal-overlay" id="editPaperModal">
+        <div class="admin-modal-card">
+            <div class="admin-modal-header">
+                <h3>Edit Question Paper Metadata</h3>
+                <button type="button" class="btn-modal-close" onclick="closeModal('editPaperModal')">&times;</button>
+            </div>
+            <form id="editPaperForm">
+                <div class="admin-modal-body">
+                    <input type="hidden" id="editPaperId">
+                    <input type="hidden" id="editPaperBranch">
+                    
+                    <div class="admin-form-group" style="margin-bottom: 14px;">
+                        <label>Paper Title / Scheme</label>
+                        <input type="text" id="editTitle" class="admin-form-control" required>
+                    </div>
+
+                    <div class="admin-form-group" style="margin-bottom: 14px;">
+                        <label>Subject / Course Name</label>
+                        <input type="text" id="editSubject" class="admin-form-control" required>
+                    </div>
+
+                    <div class="upload-form-grid" style="margin-bottom: 14px;">
+                        <div class="admin-form-group">
+                            <label>Subject Code</label>
+                            <input type="text" id="editSubjectCode" class="admin-form-control">
+                        </div>
+                        <div class="admin-form-group">
+                            <label>Examination Year</label>
+                            <input type="number" id="editYear" class="admin-form-control" min="2000" max="2035" required>
+                        </div>
+                    </div>
+
+                    <div class="upload-form-grid">
+                        <div class="admin-form-group">
+                            <label>Semester</label>
+                            <select id="editSemester" class="admin-form-control" required>
+                                <option value="1st Semester">1st Semester</option>
+                                <option value="2nd Semester">2nd Semester</option>
+                                <option value="3rd Semester">3rd Semester</option>
+                                <option value="4th Semester">4th Semester</option>
+                                <option value="5th Semester">5th Semester</option>
+                                <option value="6th Semester">6th Semester</option>
+                                <option value="7th Semester">7th Semester</option>
+                                <option value="8th Semester">8th Semester</option>
+                            </select>
+                        </div>
+                        <div class="admin-form-group">
+                            <label>Exam Type</label>
+                            <select id="editExamType" class="admin-form-control">
+                                <option value="Autonomous SEE Exam">Autonomous SEE Exam</option>
+                                <option value="Continuous Internal Evaluation (CIE)">CIE / Mid-Term</option>
+                                <option value="Supplementary / Makeup Exam">Supplementary Exam</option>
+                                <option value="Model Question Paper">Model Paper</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="admin-modal-footer">
+                    <button type="button" class="btn-topbar-action" onclick="closeModal('editPaperModal')">Cancel</button>
+                    <button type="submit" class="btn-admin-signin" id="btnSaveEdit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. DELETE CONFIRMATION MODAL -->
+    <div class="admin-modal-overlay" id="deletePaperModal">
+        <div class="admin-modal-card" style="max-width: 460px;">
+            <div class="admin-modal-header" style="border-bottom: none; padding-bottom: 0;">
+                <h3 style="color: #ef4444;">Delete Question Paper</h3>
+                <button type="button" class="btn-modal-close" onclick="closeModal('deletePaperModal')">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <p style="font-size: 14px; color: var(--admin-text-main); margin-bottom: 12px;">Are you sure you want to permanently delete this question paper?</p>
+                <div style="background: var(--admin-bg); border: 1px solid var(--admin-border); border-radius: 8px; padding: 12px; font-size: 13px;">
+                    <div id="deleteModalPaperTitle" style="font-weight: 700; color: var(--admin-text-main); margin-bottom: 4px;">...</div>
+                    <div id="deleteModalPaperMeta" style="color: var(--admin-text-muted);">...</div>
+                </div>
+                <p style="font-size: 12px; color: #ef4444; margin-top: 10px; margin-bottom: 0;">⚠️ This action is irreversible. The PDF file will be removed from storage.</p>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn-topbar-action" onclick="closeModal('deletePaperModal')">Cancel</button>
+                <button type="button" class="btn-bulk-delete-action" id="btnConfirmSingleDelete">Delete Permanently</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. BATCH DELETE CONFIRMATION MODAL -->
+    <div class="admin-modal-overlay" id="batchDeleteModal">
+        <div class="admin-modal-card" style="max-width: 460px;">
+            <div class="admin-modal-header" style="border-bottom: none; padding-bottom: 0;">
+                <h3 style="color: #ef4444;">Batch Delete Question Papers</h3>
+                <button type="button" class="btn-modal-close" onclick="closeModal('batchDeleteModal')">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <p style="font-size: 14px; color: var(--admin-text-main);">Are you sure you want to permanently delete <strong id="batchDeleteCountText" style="color: #ef4444;">0</strong> selected question papers?</p>
+                <p style="font-size: 12px; color: #ef4444; margin-bottom: 0;">⚠️ All selected papers and their associated PDF files will be immediately purged.</p>
+            </div>
+            <div class="admin-modal-footer">
+                <button type="button" class="btn-topbar-action" onclick="closeModal('batchDeleteModal')">Cancel</button>
+                <button type="button" class="btn-bulk-delete-action" id="btnConfirmBatchDelete">Yes, Delete All Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Controller Script -->
+    <script src="/admin-dashboard.js?v=1.0"></script>
+</body>
+</html>
+

@@ -1,0 +1,105 @@
+{
+  "name": "MCE PYQ Hub - Malnad College of Engineering",
+  "short_name": "MCE PYQ",
+  "description": "Official autonomous previous-year question papers, syllabus, and Ask Maya AI study assistant for Malnad College of Engineering students.",
+  "start_url": "/index.html?source=pwa",
+  "id": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#06152d",
+  "theme_color": "#0e306a",
+  "lang": "en-IN",
+  "categories": [
+    "education",
+    "reference",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ask Maya AI",
+      "short_name": "Maya AI",
+      "description": "Ask engineering questions and get instant step-by-step solutions",
+      "url": "/index.html?action=maya",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "First Year Engineering",
+      "short_name": "1st Year",
+      "description": "Physics and Chemistry cycle question papers",
+      "url": "/first-year.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Computer Science (CSE)",
+      "short_name": "CSE",
+      "description": "CSE question papers from 2020 to 2026",
+      "url": "/cse.html",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Request Paper",
+      "short_name": "Request",
+      "description": "Request missing question papers from the library",
+      "url": "/index.html?action=request",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
+

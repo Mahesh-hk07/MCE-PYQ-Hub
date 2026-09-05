@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Admin Portal - MCE PYQ Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/style.css?v=17.0">
+    <link rel="stylesheet" href="/admin.css?v=1.0">
+    <!-- Immediate PWA & Cache Purge Killswitch -->
+    <script>
+        (function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    for (var i = 0; i < regs.length; i++) { regs[i].unregister(); }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(keys) {
+                    for (var i = 0; i < keys.length; i++) { caches.delete(keys[i]); }
+                });
+            }
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        })();
+    </script>
+</head>
+
+<body class="admin-body">
+
+    <!-- ================= TOP HERO BANNER ================= -->
+    <section class="admin-login-hero">
+        <div class="admin-login-hero-inner">
+            <div class="admin-pill-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>LIBRARY &amp; DATABASE MANAGEMENT</span>
+            </div>
+            <h1>Library Admin Portal</h1>
+            <p>Publish verified previous year examination question papers across all engineering departments and semesters.</p>
+        </div>
+    </section>
+
+    <!-- ================= BREADCRUMBS ================= -->
+    <div class="admin-breadcrumbs-wrap">
+        <a href="/">Home</a>
+        <span class="separator">/</span>
+        <span class="current">Library Admin</span>
+    </div>
+
+    <!-- ================= MAIN CONTAINER ================= -->
+    <main class="admin-login-main">
+
+        <!-- 3 Stat Cards Strip (Matches Mockup) -->
+        <section class="admin-stats-strip" aria-label="Library Overview Statistics">
+            <!-- Card 1: Total Question Papers -->
+            <div class="admin-stat-card stat-blue">
+                <div class="stat-icon-wrap">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">TOTAL QUESTION PAPERS</span>
+                    <span class="stat-value" id="statPapers">0</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Active Branches -->
+            <div class="admin-stat-card stat-green">
+                <div class="stat-icon-wrap">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="21" x2="21" y2="21"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                        <polyline points="5 6 12 3 19 6"></polyline>
+                        <line x1="4" y1="10" x2="4" y2="21"></line>
+                        <line x1="20" y1="10" x2="20" y2="21"></line>
+                        <line x1="8" y1="14" x2="8" y2="17"></line>
+                        <line x1="12" y1="14" x2="12" y2="17"></line>
+                        <line x1="16" y1="14" x2="16" y2="17"></line>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">ACTIVE BRANCHES</span>
+                    <span class="stat-value" id="statBranches">0</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Subjects Covered -->
+            <div class="admin-stat-card stat-amber">
+                <div class="stat-icon-wrap">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-label">SUBJECTS COVERED</span>
+                    <span class="stat-value" id="statSubjects">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Administrator Authentication Card (Matches Mockup) -->
+        <section class="admin-auth-card">
+            <div class="admin-restricted-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>RESTRICTED AREA</span>
+            </div>
+
+            <h2>Administrator Authentication</h2>
+            <p class="auth-subtitle">Please enter your master admin password to upload or manage question papers.</p>
+
+            <form id="adminLoginForm" class="admin-login-form" autocomplete="on">
+                <!-- Optional Username / Email field (expandable) -->
+                <div id="emailFieldGroup" class="admin-form-group" style="display: none;">
+                    <label for="adminEmail">ADMIN EMAIL / USERNAME</label>
+                    <div class="admin-input-wrapper">
+                        <span class="input-icon-left">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </span>
+                        <input type="text" id="adminEmail" name="username" placeholder="admin@mce.ac.in or username" value="admin@mce.ac.in" autocomplete="username">
+                    </div>
+                </div>
+
+                <!-- Password input with lock icon -->
+                <div class="admin-form-group">
+                    <label for="adminPassword">ADMIN PASSWORD</label>
+                    <div class="admin-input-wrapper">
+                        <span class="input-icon-left">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </span>
+                        <input type="password" id="adminPassword" name="password" placeholder="Enter administrator password" required autocomplete="current-password" autofocus>
+                        <button type="button" id="togglePasswordBtn" class="input-toggle-btn" title="Toggle password visibility" aria-label="Toggle password visibility">
+                            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="btnSubmitLogin" class="btn-admin-signin">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                    <span>Sign in to Dashboard</span>
+                </button>
+
+                <!-- Subtle toggle for alternate admin account -->
+                <button type="button" id="toggleEmailField" class="admin-login-extra-toggle">
+                    Use specific administrator email account &rarr;
+                </button>
+
+                <!-- Feedback alert container -->
+                <div id="loginAlert" class="admin-alert-banner admin-alert-danger" style="display: none;" role="alert">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="loginAlertText">Invalid administrator password.</span>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <!-- Page Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 1. Check if user is already authenticated
+            try {
+                const authCheck = await fetch('/api/admin/status');
+                const authData = await authCheck.json();
+                if (authData && authData.is_admin) {
+                    window.location.replace('/admin/dashboard');
+                    return;
+                }
+            } catch (e) {
+                // Ignore status check errors
+            }
+
+            // 2. Fetch live overview stats for the 3 cards
+            try {
+                const statsRes = await fetch('/api/stats');
+                if (statsRes.ok) {
+                    const stats = await statsRes.json();
+                    document.getElementById('statPapers').textContent = Number(stats.total_papers || 0).toLocaleString();
+                    document.getElementById('statBranches').textContent = stats.active_branches || 8;
+                    document.getElementById('statSubjects').textContent = stats.total_subjects || 0;
+                }
+            } catch (e) {
+                console.warn("Stats fetch fallback", e);
+            }
+
+            // 3. Toggle password visibility
+            const passwordInput = document.getElementById('adminPassword');
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const eyeIcon = document.getElementById('eyeIcon');
+            
+            toggleBtn.addEventListener('click', function() {
+                const isPassword = passwordInput.getAttribute('type') === 'password';
+                passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                eyeIcon.innerHTML = isPassword 
+                    ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>'
+                    : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            });
+
+            // 4. Toggle specific email field
+            const emailGroup = document.getElementById('emailFieldGroup');
+            const toggleEmailBtn = document.getElementById('toggleEmailField');
+            let isEmailVisible = false;
+
+            toggleEmailBtn.addEventListener('click', function() {
+                isEmailVisible = !isEmailVisible;
+                emailGroup.style.display = isEmailVisible ? 'flex' : 'none';
+                toggleEmailBtn.textContent = isEmailVisible 
+                    ? 'Hide administrator email field' 
+                    : 'Use specific administrator email account →';
+            });
+
+            // 5. Form submission
+            const form = document.getElementById('adminLoginForm');
+            const submitBtn = document.getElementById('btnSubmitLogin');
+            const alertBox = document.getElementById('loginAlert');
+            const alertText = document.getElementById('loginAlertText');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                alertBox.style.display = 'none';
+
+                const password = passwordInput.value;
+                const email = document.getElementById('adminEmail').value.trim() || 'admin@mce.ac.in';
+
+                if (!password) {
+                    showAlert('Please enter your administrator password.');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `
+                    <svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
+                    </svg>
+                    <span>Authenticating...</span>
+                `;
+
+                try {
+                    const response = await fetch('/api/admin/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            email: email,
+                            username: email,
+                            password: password
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        alertBox.className = 'admin-alert-banner admin-alert-success';
+                        alertText.textContent = 'Access granted! Opening Admin Dashboard...';
+                        alertBox.style.display = 'flex';
+                        
+                        setTimeout(() => {
+                            window.location.replace(data.redirect || '/admin/dashboard');
+                        }, 500);
+                    } else {
+                        showAlert(data.error || 'Invalid administrator password. Access denied.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                            <span>Sign in to Dashboard</span>
+                        `;
+                        passwordInput.focus();
+                    }
+                } catch (err) {
+                    showAlert('Network error connecting to authentication server. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                            <polyline points="10 17 15 12 10 7"></polyline>
+                            <line x1="15" y1="12" x2="3" y2="12"></line>
+                        </svg>
+                        <span>Sign in to Dashboard</span>
+                    `;
+                }
+            });
+
+            function showAlert(msg) {
+                alertBox.className = 'admin-alert-banner admin-alert-danger';
+                alertText.textContent = msg;
+                alertBox.style.display = 'flex';
+            }
+        });
+    </script>
+</body>
+</html>
+

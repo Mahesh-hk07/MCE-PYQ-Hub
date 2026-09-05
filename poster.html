@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCE PYQ Hub - Campus Notice Board Poster</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .poster {
+            width: 210mm;
+            min-height: 297mm;
+            background: linear-gradient(135deg, #06152d 0%, #0a2558 50%, #0e306a 100%);
+            color: #ffffff;
+            padding: 36px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        .poster::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 24px;
+        }
+        .college-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: #ffffff;
+            padding: 4px;
+            object-fit: contain;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .college-info h3 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #93c5fd;
+            text-transform: uppercase;
+        }
+        .college-info p {
+            font-size: 13px;
+            color: #cbd5e1;
+            margin-top: 4px;
+        }
+        .hero {
+            text-align: center;
+            margin: 24px 0 16px;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.35);
+            border: 1px solid rgba(96, 165, 250, 0.5);
+            color: #bfdbfe;
+            padding: 6px 18px;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.15;
+            background: linear-gradient(to right, #ffffff, #93c5fd, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .hero p {
+            font-size: 17px;
+            color: #e2e8f0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .grid-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .feature-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 16px 18px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            backdrop-filter: blur(8px);
+        }
+        .feature-icon {
+            font-size: 28px;
+            background: rgba(59, 130, 246, 0.2);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+        .feature-text h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .feature-text p {
+            font-size: 12.5px;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+        .branches-strip {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px dashed rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .branches-strip span {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            color: #93c5fd;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin: 3px 4px;
+        }
+        .cta-section {
+            background: #ffffff;
+            color: #0f172a;
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .cta-left {
+            max-width: 360px;
+        }
+        .cta-left h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0e306a;
+            margin-bottom: 8px;
+        }
+        .cta-left ol {
+            margin-left: 20px;
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.7;
+        }
+        .cta-left ol li strong {
+            color: #1d4ed8;
+        }
+        .cta-right {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .qr-box {
+            background: #ffffff;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .qr-img {
+            width: 150px;
+            height: 150px;
+            display: block;
+        }
+        .qr-caption {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        @media print {
+            body {
+                padding: 0;
+                background: none;
+            }
+            .poster {
+                box-shadow: none;
+                width: 100%;
+                min-height: 100vh;
+                padding: 28px 32px;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2563eb;
+            color: #fff;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+
+    <div class="poster">
+        <div class="header">
+            <img src="mce-logo.png" alt="MCE Logo" class="college-logo" onerror="this.src='mce-logo.jpg'">
+            <div class="college-info">
+                <h3>Malnad College of Engineering</h3>
+                <p>Autonomous Institution under VTU | Hassan, Karnataka</p>
+            </div>
+        </div>
+
+        <div class="hero">
+            <span class="badge">🔥 Official Student Resource Portal</span>
+            <h1>MCE PYQ HUB</h1>
+            <p>The smartest way to study, prepare, and score high in VTU / Autonomous examinations.</p>
+        </div>
+
+        <div class="branches-strip">
+            <strong style="color: #ffffff; font-size: 13px; margin-right: 8px;">ALL BRANCHES COVERED:</strong>
+            <span>1st Year</span>
+            <span>CSE</span>
+            <span>AI & ML</span>
+            <span>CSBS</span>
+            <span>ECE</span>
+            <span>EEE</span>
+            <span>Mechanical</span>
+            <span>Civil</span>
+        </div>
+
+        <div class="grid-features">
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <div class="feature-text">
+                    <h4>Autonomous & VTU PYQs</h4>
+                    <p>Access previous semester SEE & CIE examination question papers categorized by year and scheme.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-text">
+                    <h4>Maya AI Exam Tutor</h4>
+                    <p>Got stuck on a tricky question? Maya AI breaks down tough concepts and provides step-by-step solutions.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">
+                    <h4>1-Click Mobile App (PWA)</h4>
+                    <p>Install directly onto your phone’s home screen without downloading from app stores. Fast, lightweight, and offline-ready.</p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📝</div>
+                <div class="feature-text">
+                    <h4>Request Missing Papers</h4>
+                    <p>Can’t find your subject’s paper? Submit a quick request and our library team will upload it for you!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <div class="cta-left">
+                <h2>📲 How to Get the App</h2>
+                <ol>
+                    <li>Scan the <strong>QR code</strong> with your phone camera.</li>
+                    <li>Open the link in <strong>Chrome</strong> or <strong>Safari</strong>.</li>
+                    <li>Tap <strong>"📲 Install App"</strong> (or "Add to Home Screen").</li>
+                    <li>Start preparing for your exams immediately!</li>
+                </ol>
+            </div>
+            <div class="cta-right">
+                <div class="qr-box">
+                    <img src="icons/phone-qr.png" alt="Scan QR Code to Open App" class="qr-img">
+                </div>
+                <span class="qr-caption">Scan to Open & Install</span>
+                <span style="font-size: 11px; color: #64748b; margin-top: 4px; font-weight: 600;">or visit:</span>
+                <span style="font-size: 11px; color: #2563eb; font-weight: 700; word-break: break-all;">https://mid-scenes-vision-newcastle.trycloudflare.com</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>🛡️ Developed for Malnad College of Engineering Students</span>
+            <span>100% Free • No Annoying Ads • Instant PDF Access</span>
+        </div>
+    </div>
+
+</body>
+</html>

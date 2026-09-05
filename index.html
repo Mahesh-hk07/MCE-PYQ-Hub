@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCE PYQ Hub</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- ONLY style.css?v=16.0 -->
+    <link rel="stylesheet" href="style.css?v=16.0">
+        <!-- ================= PWA METAS & MANIFEST ================= -->
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/icons/favicon.png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#0e306a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MCE PYQ Hub">
+    <script src="/app-installer.js" defer></script>
+</head>
+
+<body class="home-page">
+
+    <!-- ================= HEADER ================= -->
+    <header class="home-header">
+        <div class="home-brand">
+            <div class="home-brand-logo-wrap">
+                <img src="mce-logo.png" alt="Malnad College of Engineering Logo" class="home-brand-logo">
+            </div>
+            <div class="home-brand-text">
+                <h1>Malnad College of Engineering, Hassan</h1>
+            </div>
+        </div>
+
+        <nav class="home-navigation">
+            <a href="index.html" class="active">Home</a>
+            <a href="#branches">Branches</a>
+            <a href="#search">Semester</a>
+            <a href="#contact">Contact</a>
+            <button type="button" id="themeToggleBtn" onclick="toggleNightMode()" class="theme-toggle-btn" title="Toggle Night Study Mode">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <span>Night Mode</span>
+            </button>
+                        <button type="button" onclick="openRequestModal()" class="home-nav-request" title="Ask for previous question papers you need">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                <span>Request PYQ</span>
+            </button>
+            <button type="button" onclick="openContributeModal()" class="home-nav-contribute">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Submit PYQ</span>
+            </button>
+                    <button type="button" onclick="window.installMceApp && window.installMceApp()" class="nav-install-app-btn btn-install-app" title="Install MCE PYQ Hub App on your device">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                    <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                </svg>
+                <span>Install App</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- ================= HERO ================= -->
+    <section class="home-hero">
+        <!-- BACKGROUND IMAGE -->
+        <div class="home-hero-image"></div>
+
+        <!-- DARK BLUE LEFT GRADIENT OVERLAY -->
+        <div class="home-hero-overlay"></div>
+
+        <!-- LEFT CONTENT -->
+        <div class="home-hero-content">
+            <div class="home-badge">
+                LEARN SMART. SCORE BETTER.
+            </div>
+
+            <h2>MCE PYQ Hub</h2>
+
+            <h3>Malnad College of Engineering, Hassan</h3>
+
+            <div class="home-line"></div>
+
+            <p class="home-description">
+                Your one-stop destination for Previous Year<br>Question Papers.
+            </p>
+
+            <!-- FEATURE PILLS BAR -->
+            <div class="home-hero-features">
+                <div class="home-hero-feat">
+                    <div class="home-feat-icon-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            <polyline points="9 12 11 14 15 10"></polyline>
+                        </svg>
+                    </div>
+                    <span>PYQs</span>
+                </div>
+
+                <div class="home-hero-feat">
+                    <div class="home-feat-icon-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                        </svg>
+                    </div>
+                    <span>All<br>Branches</span>
+                </div>
+
+                <div class="home-hero-feat">
+                    <div class="home-feat-icon-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <span>Semester<br>Wise</span>
+                </div>
+
+                <div class="home-hero-feat feat-active">
+                    <div class="home-feat-icon-box active-circle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <span>Easy<br>Access</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="home-search-container" id="search">
+            <div class="home-search-box">
+                <span class="home-search-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input
+                    type="text"
+                    id="searchBox"
+                    placeholder="Search question papers by subject, semester, branch..."
+                >
+                <button
+                    type="button"
+                    id="homeSearchBtn"
+                >
+                    Search
+                </button>
+            </div>
+            <div id="searchResults" class="home-search-results"></div>
+        </div>
+    </section>
+
+
+    <!-- ================= BRANCHES ================= -->
+    <section class="home-branches-section" id="branches">
+        <div class="home-section-heading">
+            <div class="home-explore-badge">
+                <span class="badge-sparkle">✨</span>
+                <span>ACADEMIC DEPARTMENTS</span>
+            </div>
+            <h2>Choose Your Engineering Branch</h2>
+            <p>Select your department to access curated semester-wise previous year question papers</p>
+        </div>
+
+        <div class="home-branches">
+            <!-- CSE -->
+            <a href="cse.html" class="home-branch-card cse-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                        <line x1="14" y1="4" x2="10" y2="20"></line>
+                    </svg>
+                </div>
+                <h3>CSE</h3>
+                <p>Computer Science & Engineering</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- CSE (AI & ML) -->
+            <a href="cse-aiml.html" class="home-branch-card aiml-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a4 4 0 0 1 4 4v1a3 3 0 0 1 2 2.8V11a4 4 0 0 1-2 3.5V17a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3v-2.5A4 4 0 0 1 6 11V9.8A3 3 0 0 1 8 7V6a4 4 0 0 1 4-4z"></path>
+                        <circle cx="9" cy="9" r="1" fill="currentColor"></circle>
+                        <circle cx="15" cy="9" r="1" fill="currentColor"></circle>
+                        <path d="M9 14h6"></path>
+                        <path d="M12 2v2M12 20v2M2 12h2M20 12h2"></path>
+                    </svg>
+                </div>
+                <h3>CSE (AI & ML)</h3>
+                <p>Artificial Intelligence & ML</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- CSBS -->
+            <a href="csbs.html" class="home-branch-card csbs-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"></path>
+                        <line x1="6" y1="16" x2="9" y2="13"></line>
+                        <line x1="9" y1="13" x2="13" y2="15"></line>
+                        <line x1="13" y1="15" x2="18" y2="10"></line>
+                        <polyline points="15 10 18 10 18 13"></polyline>
+                    </svg>
+                </div>
+                <h3>CSBS</h3>
+                <p>CS & Business Systems</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- ECE -->
+            <a href="ece.html" class="home-branch-card ece-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="5" width="14" height="14" rx="2"></rect>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <line x1="9" y1="1" x2="9" y2="5"></line>
+                        <line x1="15" y1="1" x2="15" y2="5"></line>
+                        <line x1="9" y1="19" x2="9" y2="23"></line>
+                        <line x1="15" y1="19" x2="15" y2="23"></line>
+                        <line x1="1" y1="9" x2="5" y2="9"></line>
+                        <line x1="1" y1="14" x2="5" y2="14"></line>
+                        <line x1="19" y1="9" x2="23" y2="9"></line>
+                        <line x1="19" y1="14" x2="23" y2="14"></line>
+                    </svg>
+                </div>
+                <h3>ECE</h3>
+                <p>Electronics & Communication</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- EEE -->
+            <a href="eee.html" class="home-branch-card eee-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <h3>EEE</h3>
+                <p>Electrical & Electronics</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- MECHANICAL -->
+            <a href="mechanical.html" class="home-branch-card mechanical-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="9" r="2.5"></circle>
+                        <path d="M9 3v2M9 13v2M3 9h2M13 9h2M4.8 4.8l1.4 1.4M11.8 11.8l1.4 1.4M4.8 13.2l1.4-1.4M11.8 6.2l1.4-1.4"></path>
+                        <circle cx="16.5" cy="16.5" r="2"></circle>
+                        <path d="M16.5 12.5v1M16.5 19.5v1M12.5 16.5h1M19.5 16.5h1"></path>
+                    </svg>
+                </div>
+                <h3>Mechanical</h3>
+                <p>Mechanical Engineering</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- CIVIL -->
+            <a href="civil.html" class="home-branch-card civil-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 22h20"></path>
+                        <path d="M14 2v20"></path>
+                        <path d="M6 6h14l-4 8H6z"></path>
+                        <line x1="10" y1="6" x2="10" y2="22"></line>
+                        <polyline points="2 10 6 6 10 10 14 6"></polyline>
+                    </svg>
+                </div>
+                <h3>Civil</h3>
+                <p>Civil Engineering</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- FIRST YEAR -->
+            <a href="first-year.html" class="home-branch-card first-year-card">
+                <div class="branch-card-accent"></div>
+                <div class="home-branch-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                </div>
+                <h3>1st Year</h3>
+                <p>First Year Engineering</p>
+                <div class="branch-card-action">
+                    <span>Access PYQs</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </div>
+            </a>
+        </div>
+    </section>
+
+        <!-- ================= FOOTER ================= -->
+    <footer class="home-footer" id="about">
+        <h3>🎓 Malnad College of Engineering</h3>
+        <p>Autonomous Institution Affiliated to VTU, Belagavi • Hassan, Karnataka 573202</p>
+        <p id="contact" style="font-size: 12px; color: #94a3b8; margin-top: 6px;">Questions & Inquiries: <a href="mailto:contact@mcehassan.ac.in" style="color: #38bdf8; text-decoration: none;">contact@mcehassan.ac.in</a></p>
+        <p class="home-copyright">© 2026 Malnad College of Engineering, Hassan. All rights reserved.</p>
+    </footer>
+
+    
+    <!-- ================= REQUEST QUESTION PAPER MODAL ================= -->
+    <div id="requestModal" class="contribute-modal-backdrop" style="display: none;">
+        <div class="contribute-modal-card">
+            <div class="contribute-modal-header">
+                <div class="contribute-header-title">
+                    <div class="contribute-icon-badge request-badge">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="12" y1="18" x2="12" y2="12"></line>
+                            <line x1="9" y1="15" x2="15" y2="15"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Request a Question Paper</h3>
+                        <p>Can't find an exam paper? Tell us what you need and we'll source it for you!</p>
+                    </div>
+                </div>
+                <button type="button" class="contribute-close-btn" onclick="closeRequestModal()" aria-label="Close modal">&times;</button>
+            </div>
+
+            <form id="requestForm" onsubmit="handleRequestSubmit(event)" class="contribute-form">
+                <div class="contribute-form-grid">
+                    <div class="form-group">
+                        <label for="reqName">Your Name or USN <span class="optional-tag">(Optional)</span></label>
+                        <input type="text" id="reqName" name="student_name" placeholder="e.g. 4MC22CS001 or Rahul M" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reqBranch">Engineering Branch <span class="required-star">*</span></label>
+                        <select id="reqBranch" name="branch" required class="form-select" onchange="onRequestBranchChange(this.value)">
+                            <option value="" disabled selected>Select Branch</option>
+                            <option value="CSE">CSE (Computer Science)</option>
+                            <option value="CSE(AI&ML)">CSE (AI & ML)</option>
+                            <option value="CSBS">CSBS (CS & Business Systems)</option>
+                            <option value="ECE">ECE (Electronics & Comm.)</option>
+                            <option value="EEE">EEE (Electrical & Electronics)</option>
+                            <option value="Mechanical">Mechanical Engineering</option>
+                            <option value="Civil">Civil Engineering</option>
+                            <option value="First Year">1st Year (Physics / Chem Cycle)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reqSem">Semester <span class="required-star">*</span></label>
+                        <select id="reqSem" name="semester" required class="form-select">
+                            <option value="" disabled selected>Select Semester</option>
+                            <option value="1st Semester">1st Semester</option>
+                            <option value="2nd Semester">2nd Semester</option>
+                            <option value="3rd Semester">3rd Semester</option>
+                            <option value="4th Semester">4th Semester</option>
+                            <option value="5th Semester">5th Semester</option>
+                            <option value="6th Semester">6th Semester</option>
+                            <option value="7th Semester">7th Semester</option>
+                            <option value="8th Semester">8th Semester</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reqSubject">Subject Name <span class="required-star">*</span></label>
+                        <input type="text" id="reqSubject" name="subject" required placeholder="e.g. Microcontrollers, Operating Systems" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reqYear">Examination Year <span class="required-star">*</span></label>
+                        <select id="reqYear" name="year" required class="form-select">
+                            <option value="" disabled selected>Select Year</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="Any Previous Year">Any Previous Year</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reqType">Exam Scheme / Type <span class="optional-tag">(Optional)</span></label>
+                        <input type="text" id="reqType" name="exam_type" placeholder="e.g. Autonomous SEE Exam / CIE-1 / CIE-2" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 14px;">
+                    <label for="reqNotes">Additional Details or Specific Questions <span class="optional-tag">(Optional)</span></label>
+                    <textarea id="reqNotes" name="notes" rows="2" placeholder="e.g. Looking for Dec 2023 Autonomous Scheme question paper urgently" class="form-input" style="resize: vertical; font-family: inherit;"></textarea>
+                </div>
+
+                <div id="requestAlert" class="contrib-alert" style="display: none;"></div>
+
+                <div class="contribute-actions">
+                    <button type="button" class="btn-cancel" onclick="closeRequestModal()">Cancel</button>
+                    <button type="submit" id="requestSubmitBtn" class="btn-submit-contrib" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                        <span>Submit Paper Request</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-switch-hint">Looking for a question paper instead of uploading? <a onclick="switchToRequestModal()">Click here to Request a Paper &rarr;</a></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= COMMUNITY CONTRIBUTION MODAL ================= -->
+    <div id="contributeModal" class="contribute-modal-backdrop" style="display: none;">
+        <div class="contribute-modal-card">
+            <div class="contribute-modal-header">
+                <div class="contribute-header-title">
+                    <div class="contribute-icon-badge">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3>Submit a Question Paper</h3>
+                        <p>Share freshly conducted CIE / SEE exam papers with fellow students</p>
+                    </div>
+                </div>
+                <button type="button" class="contribute-close-btn" onclick="closeContributeModal()" aria-label="Close modal">&times;</button>
+            </div>
+
+            <form id="contributeForm" onsubmit="handleContributeSubmit(event)" class="contribute-form">
+                <div class="contribute-form-grid">
+                    <div class="form-group">
+                        <label for="contribName">Your Name or USN <span class="optional-tag">(Optional)</span></label>
+                        <input type="text" id="contribName" name="contributor_name" placeholder="e.g. 4MC22CS001 or Rahul M" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contribBranch">Engineering Branch <span class="required-star">*</span></label>
+                        <select id="contribBranch" name="branch" required class="form-select">
+                            <option value="" disabled selected>Select Branch</option>
+                            <option value="CSE">CSE (Computer Science)</option>
+                            <option value="CSE(AI&ML)">CSE (AI & ML)</option>
+                            <option value="CSBS">CSBS (CS & Business Systems)</option>
+                            <option value="ECE">ECE (Electronics & Comm.)</option>
+                            <option value="EEE">EEE (Electrical & Electronics)</option>
+                            <option value="Mechanical">Mechanical Engineering</option>
+                            <option value="Civil">Civil Engineering</option>
+                            <option value="First Year">1st Year (Physics / Chem Cycle)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contribSem">Semester <span class="required-star">*</span></label>
+                        <select id="contribSem" name="semester" required class="form-select">
+                            <option value="" disabled selected>Select Semester</option>
+                            <option value="1st Semester">1st Semester</option>
+                            <option value="2nd Semester">2nd Semester</option>
+                            <option value="3rd Semester">3rd Semester</option>
+                            <option value="4th Semester">4th Semester</option>
+                            <option value="5th Semester">5th Semester</option>
+                            <option value="6th Semester">6th Semester</option>
+                            <option value="7th Semester">7th Semester</option>
+                            <option value="8th Semester">8th Semester</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contribSubject">Subject Name <span class="required-star">*</span></label>
+                        <input type="text" id="contribSubject" name="subject" required placeholder="e.g. Machine Learning, VLSI" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contribYear">Examination Year <span class="required-star">*</span></label>
+                        <input type="number" id="contribYear" name="year" required min="2015" max="2030" value="2025" class="form-input">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contribTitle">Exam Type / Scheme</label>
+                        <input type="text" id="contribTitle" name="title" placeholder="e.g. Autonomous SEE Exam / CIE-2" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="contribFile">Question Paper File (PDF or Phone Photo) <span class="required-star">*</span></label>
+                    <div class="file-dropzone" onclick="document.getElementById('contribFile').click()">
+                        <input type="file" id="contribFile" name="file" accept=".pdf,image/png,image/jpeg,image/jpg" required style="display: none;" onchange="handleContribFileSelect(this)">
+                        <div class="dropzone-inner" id="dropzoneContent">
+                            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <p class="dropzone-text" id="dropzoneFilename"><strong>Click to select file</strong> or drag and drop</p>
+                            <p class="dropzone-hint">Accepts PDF documents or Smartphone camera photos (.pdf, .jpg, .png)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="contribAlert" class="contrib-alert" style="display: none;"></div>
+
+                <div class="contribute-modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeContributeModal()">Cancel</button>
+                    <button type="submit" id="contribSubmitBtn" class="btn-submit-contrib">
+                        <span>Submit for Verification</span>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <div class="modal-switch-hint">Have a question paper to share with students? <a onclick="switchToSubmitModal()">Click here to Submit / Upload &rarr;</a></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="script.js?v=7.0"></script>
+    <script src="study-companion.js?v=2.0"></script>
+    <script src="request-paper.js?v=2.0"></script>
+</body>
+</html>

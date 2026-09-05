@@ -1,0 +1,9 @@
+.env
+*.env
+.admin_password
+venv/
+__pycache__/
+*.pyc
+cloudflared.exe
+android-app/.gradle/
+*.db

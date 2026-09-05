@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Immediate PWA & Cache Purge Killswitch for Mobile Browsers -->
+    <script>
+        (function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(regs) {
+                    for (var i = 0; i < regs.length; i++) {
+                        regs[i].unregister();
+                    }
+                });
+            }
+            if ('caches' in window) {
+                caches.keys().then(function(keys) {
+                    for (var i = 0; i < keys.length; i++) {
+                        caches.delete(keys[i]);
+                    }
+                });
+            }
+            window.addEventListener('beforeinstallprompt', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Admin Portal - MCE PYQ Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=16.0">
+    <!-- ================= PWA METAS & MANIFEST ================= -->
+    <meta name="theme-color" content="#071f42">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MCE PYQs">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+</head>
+
+<body class="admin-page">
+
+    <!-- ================= TOP HEADER ================= -->
+    <header class="home-header">
+        <div class="home-brand">
+            <div class="home-brand-logo-wrap">
+                <img src="mce-logo.png" alt="Malnad College of Engineering Logo" class="home-brand-logo">
+            </div>
+            <div class="home-brand-text">
+                <h1>Malnad College of Engineering, Hassan</h1>
+            </div>
+        </div>
+
+        <nav class="home-navigation">
+            <a href="index.html">Home</a>
+            <a href="index.html#branches">Branches</a>
+            <a href="index.html#search">Semester</a>
+            <a href="index.html#contact">Contact</a>
+            <button type="button" id="themeToggleBtn" onclick="toggleNightMode()" class="theme-toggle-btn" title="Toggle Night Study Mode">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                <span>Night Mode</span>
+            </button>
+            <a href="admin.html" class="home-nav-login active">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Admin Portal</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- ================= ADMIN HERO BANNER ================= -->
+    <section class="branch-hero admin-hero">
+        <div class="branch-hero-inner">
+            <div class="branch-pill-badge admin-badge">🛡️ LIBRARY & DATABASE MANAGEMENT</div>
+            <h1>Library Admin Portal</h1>
+            <p>Publish verified previous year examination question papers across all engineering departments and semesters.</p>
+        </div>
+    </section>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main>
+        <div class="branch-breadcrumbs">
+            <a href="index.html">Home</a>
+            <span>/</span>
+            <strong>Library Admin</strong>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <section class="admin-overview">
+            <div class="admin-stat stat-blue">
+                <div class="stat-icon">📄</div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Question Papers</span>
+                    <strong id="totalPapers">...</strong>
+                </div>
+            </div>
+            <div class="admin-stat stat-green">
+                <div class="stat-icon">🏛️</div>
+                <div class="stat-info">
+                    <span class="stat-label">Active Branches</span>
+                    <strong id="activeBranches">...</strong>
+                </div>
+            </div>
+            <div class="admin-stat stat-amber">
+                <div class="stat-icon">📚</div>
+                <div class="stat-info">
+                    <span class="stat-label">Subjects Covered</span>
+                    <strong id="totalSubjects">...</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Login Panel -->
+        <section id="loginPanel" class="login-panel">
+            <div class="panel-heading">
+                <div class="badge-lock">🔒 RESTRICTED AREA</div>
+                <h2>Administrator Authentication</h2>
+                <p>Please enter your master admin password to upload or manage question papers.</p>
+            </div>
+            <form id="loginForm">
+                <div class="admin-input-group">
+                    <label for="adminPassword">Admin Password</label>
+                    <div class="input-with-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <input id="adminPassword" type="password" placeholder="Enter administrator password" autocomplete="current-password" required>
+                    </div>
+                </div>
+                <button class="admin-submit" type="submit">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                        <polyline points="10 17 15 12 10 7"></polyline>
+                        <line x1="15" y1="12" x2="3" y2="12"></line>
+                    </svg>
+                    <span>Sign in to Dashboard</span>
+                </button>
+                <p id="loginStatus" class="upload-status" role="status"></p>
+            </form>
+        </section>
+
+        <!-- AUTHENTICATED ADMIN CONTROLS (Only visible after login) -->
+        <div id="adminControls" hidden>
+            <!-- Top Admin Actions Bar -->
+            <div class="admin-top-bar">
+                <div class="admin-logged-in-badge">
+                    <span class="online-indicator"></span>
+                    <span>Admin Mode Active</span>
+                </div>
+                <button id="logoutButton" class="logout-button" type="button">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Sign Out</span>
+                </button>
+            </div>
+
+            <!-- Pending Student Submissions Review Panel -->
+            <section id="pendingSubmissionsSection" class="admin-pending-section" style="display: none;">
+                <div class="pending-header">
+                    <div class="pending-header-title">
+                        <div class="stat-icon" style="font-size: 24px;">📥</div>
+                        <div>
+                            <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">Pending Student Submissions</h2>
+                            <p style="font-size: 13px; color: #64748b;">Review, preview, and approve question papers submitted by MCE students</p>
+                        </div>
+                    </div>
+                    <span id="pendingBadgeCount" class="pending-badge-count">0 Pending</span>
+                </div>
+                <div id="pendingGrid" class="pending-grid"></div>
+            </section>
+
+            <!-- Student Paper Requests Panel -->
+            <section class="admin-panel">
+                <div class="panel-heading" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <div>
+                        <div class="badge-requests" style="background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; display: inline-block; margin-bottom: 6px;">📥 STUDENT DEMANDS</div>
+                        <h2>Student Paper Requests</h2>
+                        <p>Past examination papers requested by students that need to be sourced.</p>
+                    </div>
+                    <span id="requestsBadgeCount" class="pending-badge-count" style="background: #10b981; color: white;">0 Requests</span>
+                </div>
+                <div id="requestsGrid" class="pending-grid"></div>
+            </section>
+
+            <!-- Library Intake Upload Panel -->
+            <section class="admin-panel">
+                <div class="panel-heading">
+                    <div class="badge-upload">📤 LIBRARY INTAKE</div>
+                    <h2>Publish a Question Paper</h2>
+                    <p>Upload a PDF document and tag it with the correct department, semester, subject, and examination year.</p>
+                </div>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="form-grid">
+                        <div class="admin-input-group">
+                            <label>Engineering Branch</label>
+                            <select name="branch" required>
+                                <option value="">Select branch</option>
+                                <option value="CSE">💻 Computer Science & Engineering (CSE)</option>
+                                <option value="CSE(AI&ML)">🤖 CSE (Artificial Intelligence & ML)</option>
+                                <option value="CSBS">📊 CS & Business Systems (CSBS)</option>
+                                <option value="ECE">📡 Electronics & Communication (ECE)</option>
+                                <option value="EEE">⚡ Electrical & Electronics (EEE)</option>
+                                <option value="Mechanical">⚙️ Mechanical Engineering</option>
+                                <option value="Civil">🏗️ Civil Engineering</option>
+                                <option value="First Year">📚 First Year Engineering</option>
+                            </select>
+                        </div>
+                        <div class="admin-input-group">
+                            <label>Semester</label>
+                            <select name="semester" required>
+                                <option value="">Select semester</option>
+                                <option value="1st Semester">1st Semester</option>
+                                <option value="2nd Semester">2nd Semester</option>
+                                <option value="3rd Semester">3rd Semester</option>
+                                <option value="4th Semester">4th Semester</option>
+                                <option value="5th Semester">5th Semester</option>
+                                <option value="6th Semester">6th Semester</option>
+                                <option value="7th Semester">7th Semester</option>
+                                <option value="8th Semester">8th Semester</option>
+                            </select>
+                        </div>
+                        <div class="admin-input-group">
+                            <label>Subject / Course Name</label>
+                            <input name="subject" placeholder="e.g. Mathematics, Machine Learning" required>
+                        </div>
+                        <div class="admin-input-group">
+                            <label>Examination Year</label>
+                            <input name="year" type="number" min="2000" max="2030" placeholder="2025" required>
+                        </div>
+                    </div>
+                    <div class="admin-input-group">
+                        <label>Paper Title / Exam Scheme</label>
+                        <input name="title" placeholder="e.g. Machine Learning Autonomous Scheme Jan 2025" required>
+                    </div>
+                    <div class="admin-input-group file-field">
+                        <label>Upload PDF Document</label>
+                        <input name="file" type="file" accept="application/pdf,.pdf" required>
+                    </div>
+                    <div class="admin-action-row">
+                        <button class="admin-submit" type="submit">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <span>Publish Paper</span>
+                        </button>
+                    </div>
+                    <p id="uploadStatus" class="upload-status" role="status"></p>
+                </form>
+            </section>
+
+            <!-- Database Activity / Manage & Delete Papers -->
+            <section class="recent-panel admin-management-panel">
+                <div class="panel-heading-row">
+                    <div class="panel-heading-text">
+                        <div class="badge-history">🗑️ REPOSITORY MANAGEMENT</div>
+                        <h2>Manage & Delete Question Papers</h2>
+                        <p>Search, preview, or permanently delete uploaded question papers across all engineering departments.</p>
+                    </div>
+                    <div class="admin-papers-counter" id="adminPapersCount">
+                        <span class="count-number">0</span>
+                        <span class="count-text">Papers Loaded</span>
+                    </div>
+                </div>
+                
+                <!-- Filter Controls Toolbar -->
+                <div class="admin-toolbar">
+                    <div class="admin-search-wrapper">
+                        <svg class="admin-search-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input id="adminSearchInput" type="text" placeholder="Search by paper title, subject name, exam year..." autocomplete="off">
+                        <button id="adminClearSearch" type="button" class="admin-clear-btn" hidden title="Clear search">✕</button>
+                    </div>
+
+                    <div class="admin-filter-dropdowns">
+                        <select id="adminBranchFilter" class="admin-select-filter">
+                            <option value="">All Branches</option>
+                            <option value="CSE">💻 Computer Science (CSE)</option>
+                            <option value="CSE(AI&ML)">🤖 CSE (AI & ML)</option>
+                            <option value="CSBS">📊 CS & Business Systems</option>
+                            <option value="ECE">📡 Electronics & Comm (ECE)</option>
+                            <option value="EEE">⚡ Electrical & Electronics (EEE)</option>
+                            <option value="Mechanical">⚙️ Mechanical Engineering</option>
+                            <option value="Civil">🏗️ Civil Engineering</option>
+                            <option value="First Year">📚 1st Year Engineering</option>
+                        </select>
+
+                        <select id="adminSemesterFilter" class="admin-select-filter">
+                            <option value="">All Semesters</option>
+                            <option value="1st Semester">1st Semester</option>
+                            <option value="2nd Semester">2nd Semester</option>
+                            <option value="3rd Semester">3rd Semester</option>
+                            <option value="4th Semester">4th Semester</option>
+                            <option value="5th Semester">5th Semester</option>
+                            <option value="6th Semester">6th Semester</option>
+                            <option value="7th Semester">7th Semester</option>
+                            <option value="8th Semester">8th Semester</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Quick Branch Filter Pills -->
+                <div class="admin-branch-pills" id="adminBranchPills">
+                    <button type="button" class="admin-pill active" data-branch="">All</button>
+                    <button type="button" class="admin-pill pill-cse" data-branch="CSE">💻 CSE</button>
+                    <button type="button" class="admin-pill pill-aiml" data-branch="CSE(AI&ML)">🤖 AI&ML</button>
+                    <button type="button" class="admin-pill pill-csbs" data-branch="CSBS">📊 CSBS</button>
+                    <button type="button" class="admin-pill pill-ece" data-branch="ECE">📡 ECE</button>
+                    <button type="button" class="admin-pill pill-eee" data-branch="EEE">⚡ EEE</button>
+                    <button type="button" class="admin-pill pill-mech" data-branch="Mechanical">⚙️ Mechanical</button>
+                    <button type="button" class="admin-pill pill-civil" data-branch="Civil">🏗️ Civil</button>
+                    <button type="button" class="admin-pill pill-fy" data-branch="First Year">📚 1st Year</button>
+                </div>
+
+                <!-- Bulk Multi-Select & Batch Actions Toolbar -->
+                <div class="admin-bulk-toolbar" id="adminBulkToolbar">
+                    <div class="bulk-select-left">
+                        <label class="bulk-checkbox-label" for="selectAllCheckbox">
+                            <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)">
+                            <span id="selectAllText">Select All (0)</span>
+                        </label>
+                    </div>
+                    <div class="bulk-actions-right" id="bulkActionsGroup" style="display: none;">
+                        <span class="bulk-selected-badge" id="bulkSelectedBadge">0 Selected</span>
+                        <button type="button" class="btn-bulk-delete" onclick="batchDeleteSelected()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            <span>Delete Selected</span>
+                        </button>
+                        <button type="button" class="btn-bulk-clear" onclick="clearBulkSelection()">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Papers List -->
+                <div id="recentPapers" class="recent-list">
+                    <p class="empty-state">Loading question papers...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+        <!-- ================= FOOTER ================= -->
+    <footer class="home-footer" id="about">
+        <h3>🎓 Malnad College of Engineering</h3>
+        <p>Autonomous Institution Affiliated to VTU, Belagavi • Hassan, Karnataka 573202</p>
+        <p id="contact" style="font-size: 12px; color: #94a3b8; margin-top: 6px;">Questions & Inquiries: <a href="mailto:contact@mcehassan.ac.in" style="color: #38bdf8; text-decoration: none;">contact@mcehassan.ac.in</a></p>
+        <p class="home-copyright">© 2026 Malnad College of Engineering, Hassan. All rights reserved.</p>
+    </footer>
+
+    <script src="admin.js?v=5.0"></script>
+    <script src="study-companion.js?v=2.0"></script>
+</body>
+</html>

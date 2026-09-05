@@ -1,0 +1,11 @@
+# MCE PYQ Hub - Project Dependencies
+# The core server (server.py) runs using Python 3.10+ Standard Library modules:
+# - http.server
+# - sqlite3
+# - pathlib
+# - json, secrets, os, re
+
+# Optional development & testing packages:
+requests>=2.31.0
+pytest>=8.0.0
+
