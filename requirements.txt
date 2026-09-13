@@ -8,8 +8,7 @@
 # Core web server runs on Python 3 Standard Library (http.server, sqlite3)
 
 # Optional development & testing packages:
-# AI Engine & Environment
-cohere>=5.0.0
+# Environment & Configuration
 python-dotenv>=1.0.0
 
 # QR Code Generation & Imaging

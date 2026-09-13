@@ -1,6 +1,6 @@
-# 🎓 MCE PYQ Hub & Maya AI
+# 🎓 MCE PYQ Hub
 
-> **The Next-Gen Digital Examination Archive, Community Repository & AI Study Companion for Malnad College of Engineering (MCE), Hassan.**
+> **The Next-Gen Digital Examination Archive & Community Repository for Malnad College of Engineering (MCE), Hassan.**
 
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20PWA%20%7C%20Android-0e306a.svg)]()
 [![Python](https://img.shields.io/badge/Backend-Python%20ThreadingHTTPServer-3776ab.svg?logo=python&logoColor=white)]()
@@ -14,8 +14,6 @@
 
 **MCE PYQ Hub** is a full-stack, enterprise-grade academic portal and mobile application built to solve the age-old problem of students scrambling for previous year question papers before Semester End Exams (SEE) and Continuous Internal Evaluations (CIE).
 
-The platform pairs a fast, student-centric question paper repository with **Maya AI** — a custom autonomous engineering study assistant that delivers step-by-step academic proofs, answers, and syllabus breakdowns.
-
 ---
 
 ## 🏗️ System Architecture
@@ -27,21 +25,18 @@ The project is architected into two completely isolated tiers: the **Public Stud
                            │   Students (Mobile & Web)    │
                            └──────────────┬───────────────┘
                                           │
-                  ┌───────────────────────┴───────────────────────┐
-                  ▼                                               ▼
-     ┌────────────────────────┐                      ┌────────────────────────┐
-     │  Public Student Portal │                      │  Maya AI Study Engine  │
-     │  • 8 Branches + 1st Yr │                      │  • Fast Precision (7)  │
-     │  • Search & Schemes    │                      │  • Deep Think (7.7)    │
-     │  • 1-Click PDF Downld  │                      │  • Contextual Syllabus │
-     │  • Paper Requests      │                      └────────────┬───────────┘
-     └────────────┬───────────┘                                   │
-                  │                                               │
-                  └───────────────────────┬───────────────────────┘
+                                          ▼
+                     ┌──────────────────────────────────────────────┐
+                     │            Public Student Portal             │
+                     │            • 8 Branches + 1st Year           │
+                     │            • Search & Schemes                │
+                     │            • 1-Click PDF Download            │
+                     │            • Student Paper Requests          │
+                     └────────────────────┬─────────────────────────┘
                                           │
                                           ▼
-                   ┌──────────────────────────────────────────────┐
-                   │        Security & Gatekeeper Engine          │
+                    ┌──────────────────────────────────────────────┐
+                    │        Security & Gatekeeper Engine          │
                    │        • Block .env, .db, .py, .bat          │
                    │        • Anti-Path Traversal (403)           │
                    │        • Injected Security Headers           │
@@ -74,13 +69,7 @@ The project is architected into two completely isolated tiers: the **Public Stud
 - **Student Paper Requests**: Missing a paper? Students can submit a structured request detailing Subject, Year, and Exam Type.
 - **Community Contributions**: Students can upload newly held exam papers directly for library verification.
 
-### 🤖 2. Maya AI Engineering Tutor
-- **Dual Thinking Modes**:
-  - **Maya 7 (Fast Precision)**: Instant point-wise definitions, key formulas, and rapid exam revision points.
-  - **Maya 7.7 (Deep Think)**: Comprehensive 10-mark examination problem solver with derivations, step-by-step proofs, and practical engineering examples.
-- **Context-Aware**: Adapts explanations directly to the student’s department and autonomous syllabus.
-
-### 🛡️ 3. Restricted Library Admin Portal
+### 🛡️ 2. Restricted Library Admin Portal
 - **Complete Route Isolation**: Dedicated routes (`/admin/login` and `/admin/dashboard`) with zero visible links across the student-facing website.
 - **Cryptographic Security**: PBKDF2-HMAC-SHA256 password hashing with 100,000 rounds and unique 16-byte random salts.
 - **Session Protection**: `HttpOnly`, `SameSite=Strict` secure session tokens.
@@ -92,7 +81,7 @@ The project is architected into two completely isolated tiers: the **Public Stud
 - **Student Demand Triage**: View requested papers and fulfill them with 1-click pre-filled upload forms.
 - **Audit Logs**: Real-time logging of all administrative logins, edits, uploads, and deletions.
 
-### 📲 4. Progressive Web App (PWA) & Mobile Ready
+### 📲 3. Progressive Web App (PWA) & Mobile Ready
 - **Instant 1-Click Install**: Installs directly from mobile Chrome or Safari without downloading from app stores.
 - **Native Experience**: Standalone fullscreen display, app drawer icon, and splash branding.
 - **Service Worker Caching**: Instant launch and offline caching for static assets, with zero-stale bypass on dynamic API queries.
@@ -121,7 +110,6 @@ The backend server is hardened against standard web vulnerabilities and passed a
 - **Frontend**: HTML5, CSS3 (Modern Flexbox/Grid, Glassmorphism, Dark/Navy Theme), Vanilla JavaScript (ES6+), Web Manifest, Service Worker API.
 - **Backend**: Python 3 (`ThreadingHTTPServer`, `sqlite3`, `secrets`, `hashlib`).
 - **Database**: SQLite3 (ACID compliant, relational schema, activity logging).
-- **AI Integration**: Cohere Command-R / Command-R+ via custom `maya_ai_engine.py`.
 - **Tunneling & PWA HTTPS**: Cloudflare Quick Tunnels (`cloudflared`).
 - **Native Mobile**: Android Studio Java SDK (WebView, SwipeRefreshLayout, DownloadManager).
 
@@ -142,13 +130,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment Variables
-Create a `.env` file in the root directory:
-```env
-COHERE_API_KEY=your_cohere_api_key_here
-```
-
-### 4. Run the Server & Mobile Tunnel
+### 3. Run the Server & Mobile Tunnel
 Double-click **`start-mce-hub.bat`** or run:
 ```bash
 python server.py

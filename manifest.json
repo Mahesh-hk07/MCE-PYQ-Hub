@@ -1,7 +1,7 @@
 {
   "name": "MCE PYQ Hub - Malnad College of Engineering",
   "short_name": "MCE PYQ",
-  "description": "Official autonomous previous-year question papers, syllabus, and Ask Maya AI study assistant for Malnad College of Engineering students.",
+  "description": "Official autonomous previous-year question papers and syllabus for Malnad College of Engineering students.",
   "start_url": "/index.html?source=pwa",
   "id": "/?source=pwa",
   "scope": "/",
@@ -72,13 +72,6 @@
     }
   ],
   "shortcuts": [
-    {
-      "name": "Ask Maya AI",
-      "short_name": "Maya AI",
-      "description": "Ask engineering questions and get instant step-by-step solutions",
-      "url": "/index.html?action=maya",
-      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
-    },
     {
       "name": "First Year Engineering",
       "short_name": "1st Year",

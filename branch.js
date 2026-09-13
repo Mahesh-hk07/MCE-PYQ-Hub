@@ -237,7 +237,7 @@ async function loadBranchPapers() {
 
 // Bind Semester Filter Pills
 document.querySelectorAll(".sem-pill").forEach((pill) => {
-    if (pill.classList.contains("study-companion-trigger-pill") || pill.classList.contains("btn-ask-maya-hero")) return;
+    if (pill.classList.contains("study-companion-trigger-pill")) return;
     pill.addEventListener("click", () => {
         if (semesterFilter) {
             semesterFilter.value = pill.dataset.sem !== undefined ? pill.dataset.sem : "";

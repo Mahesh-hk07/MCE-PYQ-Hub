@@ -57,7 +57,7 @@
                     <img src="/icons/icon-96.png" alt="MCE App Icon" class="pwa-banner-icon">
                     <div class="pwa-banner-text">
                         <strong>MCE PYQ Hub App</strong>
-                        <span>Install on home screen for fast 1-tap revision & Maya AI</span>
+                        <span>Install on home screen for fast 1-tap revision</span>
                     </div>
                 </div>
                 <div class="pwa-banner-actions">

@@ -870,33 +870,6 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 self.send_json(404, {"error": msg})
             return
 
-        # =========================================
-        # ASK MAYA AI ENDPOINT
-        # =========================================
-        if request_path == "/api/ai/ask":
-            content_length = int(self.headers.get("Content-Length", "0"))
-            try:
-                data = json.loads(self.rfile.read(content_length))
-            except (json.JSONDecodeError, UnicodeDecodeError):
-                self.send_json(400, {"error": "Invalid JSON request"})
-                return
-
-            prompt = data.get("prompt", "").strip()
-            mode = data.get("mode", "maya-7.7-deep")
-            branch = data.get("branch", "General")
-            has_image = bool(data.get("image"))
-
-            if not prompt and not has_image:
-                self.send_json(400, {"error": "Please enter a question or upload a question paper image."})
-                return
-
-            try:
-                from maya_ai_engine import generate_maya_response
-                result = generate_maya_response(prompt=prompt, mode=mode, branch=branch, has_image=has_image)
-                self.send_json(200, result)
-            except Exception as e:
-                self.send_json(500, {"error": f"AI Engine error: {str(e)}"})
-            return
 
         # =========================================
         # STUDENT PAPER REQUESTS ENDPOINT

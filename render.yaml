@@ -7,5 +7,3 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.8
-      - key: COHERE_API_KEY
-        sync: false

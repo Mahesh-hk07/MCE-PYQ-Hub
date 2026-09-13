@@ -9,7 +9,6 @@ const PRECACHE_ASSETS = [
     '/style.css?v=17.0',
     '/script.js?v=13.0',
     '/study-companion.js',
-    '/ask-maya.js',
     '/mce-logo.png',
     '/icons/icon-192.png',
     '/icons/icon-512.png',
