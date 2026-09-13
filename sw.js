@@ -1,12 +1,12 @@
 // MCE PYQ Hub - High Performance PWA Service Worker
-// Version: 1.0.0
-const CACHE_NAME = 'mce-pyq-static-v1.0.0';
+// Version: 1.1.0
+const CACHE_NAME = 'mce-pyq-static-v1.1.0';
 
 const PRECACHE_ASSETS = [
     '/',
     '/index.html',
     '/manifest.json',
-    '/style.css?v=17.0',
+    '/style.css?v=18.0',
     '/script.js?v=13.0',
     '/study-companion.js',
     '/mce-logo.png',
