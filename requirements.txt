@@ -1,6 +1,13 @@
+# MCE PYQ Hub - Project Dependencies
+# The core server (server.py) runs using Python 3.10+ Standard Library modules:
+# - http.server
+# - sqlite3
+# - pathlib
+# - json, secrets, os, re
 # MCE PYQ Hub - Production Dependencies
 # Core web server runs on Python 3 Standard Library (http.server, sqlite3)
 
+# Optional development & testing packages:
 # AI Engine & Environment
 cohere>=5.0.0
 python-dotenv>=1.0.0
@@ -11,5 +18,6 @@ Pillow>=10.0.0
 
 # HTTP utilities & testing
 requests>=2.31.0
+pytest>=8.0.0
 
 

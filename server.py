@@ -1265,16 +1265,17 @@ def kill_existing_port_listeners(port=8000):
         import subprocess
         output = subprocess.check_output(f"netstat -ano | findstr :{port}", shell=True).decode()
         current_pid = os.getpid()
+        killed = False
         for line in output.strip().splitlines():
             if f":{port}" in line and "LISTENING" in line:
                 parts = line.strip().split()
                 if parts:
                     pid = int(parts[-1])
                     if pid != current_pid and pid > 0:
-                        try:
-                            os.kill(pid, 9)
-                        except Exception:
-                            pass
+                        subprocess.run(f"taskkill /f /pid {pid}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        killed = True
+        if killed:
+            time.sleep(1)
     except Exception:
         pass
 
@@ -1285,14 +1286,26 @@ if __name__ == "__main__":
     initialize_database()
     host_ip = get_local_ip()
     ThreadingHTTPServer.daemon_threads = True
-    ThreadingHTTPServer.allow_reuse_address = False
-    server = ThreadingHTTPServer(("0.0.0.0", port), RequestHandler)
+    ThreadingHTTPServer.allow_reuse_address = True
+
+    server = None
+    for attempt in range(5):
+        try:
+            server = ThreadingHTTPServer(("0.0.0.0", port), RequestHandler)
+            break
+        except OSError as e:
+            if attempt < 4:
+                kill_existing_port_listeners(port)
+                time.sleep(1)
+            else:
+                raise e
+
     print("==================================================================")
     print(f"[SERVER] MCE PYQ Hub Server Active on port {port}")
     print(f"[PC]     Local Computer:               http://localhost:{port}")
     print(f"[PHONE]  Phone (Same Wi-Fi / Hotspot): http://{host_ip}:{port}")
     print(f"[ADMIN]  Admin Portal Login:           http://localhost:{port}/admin/login")
-    print(f"[ADMIN]  Admin Dashboard:              http://localhost:8000/admin/dashboard")
+    print(f"[ADMIN]  Admin Dashboard:              http://localhost:{port}/admin/dashboard")
     print("==================================================================")
     try:
         server.serve_forever()
