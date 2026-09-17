@@ -516,15 +516,7 @@
                                     <div class="admin-form-group">
                                         <label for="uploadSemester">Semester *</label>
                                         <select id="uploadSemester" name="semester" class="admin-form-control" required>
-                                            <option value="">Select Semester</option>
-                                            <option value="1st Semester">1st Semester</option>
-                                            <option value="2nd Semester">2nd Semester</option>
-                                            <option value="3rd Semester">3rd Semester</option>
-                                            <option value="4th Semester">4th Semester</option>
-                                            <option value="5th Semester">5th Semester</option>
-                                            <option value="6th Semester">6th Semester</option>
-                                            <option value="7th Semester">7th Semester</option>
-                                            <option value="8th Semester">8th Semester</option>
+                                            <option value="">Select Department First</option>
                                         </select>
                                     </div>
 
@@ -539,17 +531,28 @@
                                     </div>
 
                                     <div class="admin-form-group">
-                                        <label for="uploadYear">Examination Year *</label>
-                                        <input type="number" id="uploadYear" name="year" class="admin-form-control" min="2000" max="2035" placeholder="2025" required>
+                                        <label for="uploadYear">Academic Year *</label>
+                                        <select id="uploadYear" name="year" class="admin-form-control" required>
+                                            <option value="2025" selected>2025</option>
+                                            <option value="2026">2026</option>
+                                        </select>
                                     </div>
 
                                     <div class="admin-form-group">
                                         <label for="uploadExamType">Exam Type *</label>
                                         <select id="uploadExamType" name="exam_type" class="admin-form-control" required>
-                                            <option value="Autonomous SEE Exam">Autonomous SEE Examination (Semester End)</option>
-                                            <option value="Continuous Internal Evaluation (CIE)">Continuous Internal Evaluation (CIE / Mid-Term)</option>
-                                            <option value="Supplementary / Makeup Exam">Supplementary / Makeup Examination</option>
-                                            <option value="Model Question Paper">Model Question Paper</option>
+                                            <option value="Semester Examinations" selected>Semester Examinations (SEE)</option>
+                                            <option value="CIE Examinations">CIE Examinations (Continuous Internal Evaluation)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="admin-form-group" id="uploadCieGroup" style="display: none;">
+                                        <label for="uploadCieNumber">CIE Number *</label>
+                                        <select id="uploadCieNumber" name="cie_number" class="admin-form-control">
+                                            <option value="">Select CIE Number</option>
+                                            <option value="CIE-1">CIE-1</option>
+                                            <option value="CIE-2">CIE-2</option>
+                                            <option value="CIE-3">CIE-3</option>
                                         </select>
                                     </div>
 
@@ -904,12 +907,23 @@
                         <div class="admin-form-group">
                             <label>Exam Type</label>
                             <select id="editExamType" class="admin-form-control">
-                                <option value="Autonomous SEE Exam">Autonomous SEE Exam</option>
-                                <option value="Continuous Internal Evaluation (CIE)">CIE / Mid-Term</option>
+                                <option value="Semester Examinations">Semester Examinations (SEE)</option>
+                                <option value="CIE Examinations">CIE Examinations</option>
+                                <option value="Autonomous SEE Exam">Autonomous SEE Exam (Legacy)</option>
+                                <option value="Continuous Internal Evaluation (CIE)">CIE / Mid-Term (Legacy)</option>
                                 <option value="Supplementary / Makeup Exam">Supplementary Exam</option>
                                 <option value="Model Question Paper">Model Paper</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="admin-form-group" id="editCieGroup" style="display: none; margin-top: 10px;">
+                        <label>CIE Number</label>
+                        <select id="editCieNumber" class="admin-form-control">
+                            <option value="">None / Not Applicable</option>
+                            <option value="CIE-1">CIE-1</option>
+                            <option value="CIE-2">CIE-2</option>
+                            <option value="CIE-3">CIE-3</option>
+                        </select>
                     </div>
                 </div>
                 <div class="admin-modal-footer">

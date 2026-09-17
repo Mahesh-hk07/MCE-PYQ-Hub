@@ -105,6 +105,7 @@ def create_schema(branch=None):
                 subject_code TEXT DEFAULT '',
                 year INTEGER NOT NULL,
                 exam_type TEXT DEFAULT 'Autonomous SEE Exam',
+                cie_number TEXT DEFAULT '',
                 file TEXT NOT NULL,
                 uploaded_by TEXT DEFAULT 'Library Admin',
                 created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -113,6 +114,9 @@ def create_schema(branch=None):
             )
             """
         )
+        existing_cols = [r[1] for r in connection.execute("PRAGMA table_info(papers)").fetchall()]
+        if "cie_number" not in existing_cols:
+            connection.execute("ALTER TABLE papers ADD COLUMN cie_number TEXT DEFAULT ''")
         connection.execute(
             """
             CREATE TABLE IF NOT EXISTS deleted_papers_log (
@@ -156,6 +160,31 @@ def initialize_database():
     create_schema()
 
 
+def validate_academic_submission(branch, semester, year, exam_type, cie_number=""):
+    if branch not in BRANCHES:
+        return False, "Choose a valid branch"
+    if branch == "First Year":
+        if semester not in ["1st Semester", "2nd Semester"]:
+            return False, "First Year allows only 1st Semester and 2nd Semester"
+    else:
+        if semester not in ["3rd Semester", "4th Semester", "5th Semester", "6th Semester", "7th Semester", "8th Semester"]:
+            return False, f"{branch} allows only 3rd Semester to 8th Semester"
+
+    try:
+        y = int(year)
+    except (ValueError, TypeError):
+        return False, "Invalid academic year"
+
+    if y not in [2025, 2026]:
+        return False, "Academic Year must be 2025 or 2026"
+
+    if "cie" in exam_type.lower():
+        if cie_number not in ["CIE-1", "CIE-2", "CIE-3"]:
+            return False, "Please select a valid CIE number (CIE-1, CIE-2, or CIE-3)"
+
+    return True, ""
+
+
 def search_papers(search_text="", branch_filter=None):
     papers = []
     with connect_papers_db() as conn:
@@ -182,9 +211,10 @@ def search_papers(search_text="", branch_filter=None):
                  OR semester LIKE ? COLLATE NOCASE
                  OR subject LIKE ? COLLATE NOCASE
                  OR subject_code LIKE ? COLLATE NOCASE
+                 OR cie_number LIKE ? COLLATE NOCASE
                  OR CAST(year AS TEXT) LIKE ?)"""
             )
-            params.extend([pattern, pattern, pattern, pattern, pattern, pattern])
+            params.extend([pattern, pattern, pattern, pattern, pattern, pattern, pattern])
 
         where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
         query = f"""
@@ -192,6 +222,7 @@ def search_papers(search_text="", branch_filter=None):
                    COALESCE(subject_code, '') as subject_code,
                    year, 
                    COALESCE(exam_type, 'Autonomous SEE Exam') as exam_type,
+                   COALESCE(cie_number, '') as cie_number,
                    file, created_at,
                    COALESCE(uploaded_by, 'Library Admin') as uploaded_by,
                    COALESCE(status, 'published') as status
@@ -741,6 +772,7 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 semester = data.get("semester", "").strip()
                 year = int(data.get("year"))
                 exam_type = data.get("exam_type", "Autonomous SEE Exam").strip()
+                cie_number = data.get("cie_number", "").strip() if "cie" in exam_type.lower() else ""
 
                 if branch not in BRANCHES:
                     raise ValueError("Invalid branch")
@@ -749,10 +781,10 @@ class RequestHandler(SimpleHTTPRequestHandler):
                     conn.execute(
                         """
                         UPDATE papers
-                        SET title = ?, subject = ?, subject_code = ?, semester = ?, year = ?, exam_type = ?, updated_at = CURRENT_TIMESTAMP
+                        SET title = ?, subject = ?, subject_code = ?, semester = ?, year = ?, exam_type = ?, cie_number = ?, updated_at = CURRENT_TIMESTAMP
                         WHERE id = ?
                         """,
-                        (title, subject, subject_code, semester, year, exam_type, paper_id)
+                        (title, subject, subject_code, semester, year, exam_type, cie_number, paper_id)
                     )
 
                 admin_user = self.get_current_user()
@@ -1151,18 +1183,21 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 subject_code = fields.get("subject_code", "").strip()
                 title = fields.get("title", "").strip() or f"{subject} ({semester})"
                 exam_type = fields.get("exam_type", "Autonomous SEE Exam").strip()
+                cie_number = fields.get("cie_number", "").strip()
 
                 try:
                     year = int(fields.get("year", "0"))
                 except ValueError:
                     year = 0
 
-                if branch not in BRANCHES:
-                    raise ValueError("Choose a valid branch")
-                if not re.fullmatch(r"[1-8](st|nd|rd|th) Semester", semester):
-                    raise ValueError("Choose a valid semester (1st to 8th)")
-                if not subject or year < 2000 or year > 2100:
-                    raise ValueError("Enter a valid subject name and year (2000-2100)")
+                is_valid, validation_err = validate_academic_submission(branch, semester, year, exam_type, cie_number)
+                if not is_valid:
+                    raise ValueError(validation_err)
+                if "cie" not in exam_type.lower():
+                    cie_number = ""
+
+                if not subject:
+                    raise ValueError("Enter a valid subject name")
                 if not uploaded_file or not uploaded_file[0] or not uploaded_file[1]:
                     raise ValueError("Select a PDF question paper file to upload")
 
@@ -1194,10 +1229,10 @@ class RequestHandler(SimpleHTTPRequestHandler):
                     with connect_database(branch) as connection:
                         cursor = connection.execute(
                             """
-                            INSERT INTO papers (title, branch, semester, subject, subject_code, year, exam_type, file, uploaded_by, status)
-                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'published')
+                            INSERT INTO papers (title, branch, semester, subject, subject_code, year, exam_type, cie_number, file, uploaded_by, status)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'published')
                             """,
-                            (title, branch, semester, subject, subject_code, year, exam_type, relative_file, admin_name),
+                            (title, branch, semester, subject, subject_code, year, exam_type, cie_number, relative_file, admin_name),
                         )
                         paper_id = cursor.lastrowid
                 except Exception:

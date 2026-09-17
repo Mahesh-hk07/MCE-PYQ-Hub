@@ -339,7 +339,11 @@ function renderPapersTable() {
                 <td>${escapeHtml(p.subject)}</td>
                 <td><code style="font-size: 11px; background: var(--admin-bg); padding: 2px 6px; border-radius: 4px;">${escapeHtml(p.subject_code || "-")}</code></td>
                 <td><strong>${p.year}</strong></td>
-                <td><span style="font-size: 11.5px; color: var(--admin-text-muted);">${escapeHtml(p.exam_type || "Autonomous SEE")}</span></td>
+                <td>
+                    <span style="font-size: 11.5px; color: var(--admin-text-muted);">${escapeHtml(p.exam_type || "Autonomous SEE")}</span>
+                    ${p.cie_number ? `<span style="font-size: 10px; background: #e0f2fe; color: #0284c7; padding: 2px 6px; border-radius: 4px; margin-left: 4px; font-weight: 600;">${escapeHtml(p.cie_number)}</span>` : ""}
+                    ${(!p.exam_type || (!["Semester Examinations", "CIE Examinations"].includes(p.exam_type))) ? `<span style="font-size: 10px; background: #fef3c7; color: #d97706; padding: 2px 5px; border-radius: 4px; margin-left: 4px; font-weight: 600;" title="Legacy / Review Required">Legacy</span>` : ""}
+                </td>
                 <td>
                     <div class="table-action-btns">
                         <a href="/${escapeHtml(p.file)}" target="_blank" class="btn-table-action" title="Preview PDF Document">
@@ -553,24 +557,74 @@ function setupDropzone() {
         }
     });
 
-    // Auto-fill title helper
-    const subjectInput = document.getElementById("uploadSubject");
+    // Dynamic Branch -> Semester and Exam Type -> CIE Number handlers
+    const branchSelect = document.getElementById("uploadBranch");
     const semesterSelect = document.getElementById("uploadSemester");
+    const examTypeSelect = document.getElementById("uploadExamType");
+    const cieGroup = document.getElementById("uploadCieGroup");
+    const cieNumberSelect = document.getElementById("uploadCieNumber");
+    const subjectInput = document.getElementById("uploadSubject");
     const yearInput = document.getElementById("uploadYear");
     const titleInput = document.getElementById("uploadTitle");
 
+    function updateUploadSemesters() {
+        if (!branchSelect || !semesterSelect) return;
+        const branch = branchSelect.value;
+        semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+        if (!branch) {
+            semesterSelect.innerHTML = '<option value="">Select Department First</option>';
+            return;
+        }
+        const sems = (branch === "First Year")
+            ? ["1st Semester", "2nd Semester"]
+            : ["3rd Semester", "4th Semester", "5th Semester", "6th Semester", "7th Semester", "8th Semester"];
+        sems.forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s;
+            opt.textContent = s;
+            semesterSelect.appendChild(opt);
+        });
+    }
+
+    if (branchSelect) {
+        branchSelect.addEventListener("change", () => {
+            updateUploadSemesters();
+            autoSuggestTitle();
+        });
+    }
+
+    if (examTypeSelect) {
+        examTypeSelect.addEventListener("change", () => {
+            const isCie = examTypeSelect.value === "CIE Examinations";
+            if (cieGroup) cieGroup.style.display = isCie ? "block" : "none";
+            if (cieNumberSelect) {
+                cieNumberSelect.required = isCie;
+                if (!isCie) cieNumberSelect.value = "";
+            }
+            autoSuggestTitle();
+        });
+    }
+
+    if (cieNumberSelect) {
+        cieNumberSelect.addEventListener("change", () => autoSuggestTitle());
+    }
+
     const autoSuggestTitle = () => {
+        if (!subjectInput) return;
         const s = subjectInput.value.trim();
-        const sem = semesterSelect.value;
-        const y = yearInput.value.trim();
-        if (s && !titleInput.value) {
-            titleInput.placeholder = `${s} ${sem ? `(${sem})` : ""} Autonomous Scheme ${y || 2025}`;
+        const sem = semesterSelect ? semesterSelect.value : "";
+        const y = yearInput ? yearInput.value.trim() : "2025";
+        const examType = examTypeSelect ? examTypeSelect.value : "";
+        const cie = cieNumberSelect ? cieNumberSelect.value : "";
+        if (s && titleInput && !titleInput.value) {
+            const tag = (examType === "CIE Examinations" && cie) ? cie : "SEE";
+            titleInput.placeholder = `${s} ${sem ? `(${sem})` : ""} ${tag} ${y || 2025}`;
         }
     };
 
-    subjectInput.addEventListener("input", autoSuggestTitle);
-    semesterSelect.addEventListener("change", autoSuggestTitle);
-    yearInput.addEventListener("input", autoSuggestTitle);
+    if (subjectInput) subjectInput.addEventListener("input", autoSuggestTitle);
+    if (semesterSelect) semesterSelect.addEventListener("change", autoSuggestTitle);
+    if (yearInput) yearInput.addEventListener("change", autoSuggestTitle);
 
     // Form submit
     const form = document.getElementById("uploadPaperForm");
@@ -608,6 +662,8 @@ function setupDropzone() {
                 alertBanner.style.display = "flex";
                 form.reset();
                 selectedText.style.display = "none";
+                if (cieGroup) cieGroup.style.display = "none";
+                updateUploadSemesters();
                 await refreshAllData();
             } else {
                 alertBanner.className = "admin-alert-banner admin-alert-danger";
@@ -637,6 +693,15 @@ function setupDropzone() {
 // ==========================================================
 
 function setupModals() {
+    // Toggle CIE group in edit modal
+    const editExamType = document.getElementById("editExamType");
+    const editCieGroup = document.getElementById("editCieGroup");
+    if (editExamType && editCieGroup) {
+        editExamType.addEventListener("change", () => {
+            editCieGroup.style.display = editExamType.value === "CIE Examinations" ? "block" : "none";
+        });
+    }
+
     // Edit Form submit
     document.getElementById("editPaperForm").addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -648,6 +713,9 @@ function setupModals() {
         const semester = document.getElementById("editSemester").value;
         const year = Number(document.getElementById("editYear").value);
         const exam_type = document.getElementById("editExamType").value;
+        const cie_number = (exam_type === "CIE Examinations" && document.getElementById("editCieNumber"))
+            ? document.getElementById("editCieNumber").value
+            : "";
 
         const btn = document.getElementById("btnSaveEdit");
         btn.disabled = true;
@@ -657,7 +725,7 @@ function setupModals() {
             const res = await fetch("/api/papers/edit", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, branch, title, subject, subject_code, semester, year, exam_type })
+                body: JSON.stringify({ id, branch, title, subject, subject_code, semester, year, exam_type, cie_number })
             });
             if (res.ok) {
                 closeModal("editPaperModal");
@@ -698,6 +766,16 @@ function openEditModal(encodedPaper) {
     document.getElementById("editSemester").value = paper.semester || "1st Semester";
     document.getElementById("editYear").value = paper.year || 2024;
     document.getElementById("editExamType").value = paper.exam_type || "Autonomous SEE Exam";
+
+    const editCieNumber = document.getElementById("editCieNumber");
+    const editCieGroup = document.getElementById("editCieGroup");
+    if (editCieNumber) {
+        editCieNumber.value = paper.cie_number || "";
+    }
+    if (editCieGroup) {
+        editCieGroup.style.display = paper.exam_type === "CIE Examinations" ? "block" : "none";
+    }
+
     openModal("editPaperModal");
 }
 
