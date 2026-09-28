@@ -203,6 +203,11 @@ function renderExamTypeSelection(state) {
     const legacyPapers = semPapers.filter(p => p.year && Number(p.year) < 2025);
     const legacyHtml = renderLegacyArchiveBox(legacyPapers, `Earlier Years Archive for ${escapeHtml(state.sem)} (Pre-2025)`);
 
+    const isTwoCie = isTwoCieSemester(state.sem);
+    const cieSubtitle = isTwoCie
+        ? "Continuous Internal Evaluations (CIE-1, CIE-2)"
+        : "Continuous Internal Evaluations (CIE-1, CIE-2, CIE-3)";
+
     paperResults.innerHTML = `
         <div class="academic-nav-container">
             <div class="academic-nav-header">
@@ -226,7 +231,7 @@ function renderExamTypeSelection(state) {
                 <div class="academic-card" role="button" tabindex="0" onclick="setAcademicState({ sem: '${escapeHtml(state.sem)}', type: 'CIE Examinations' })">
                     <div class="academic-card-icon-wrap">📝</div>
                     <div class="academic-card-title">CIE Examinations</div>
-                    <div class="academic-card-subtitle">Continuous Internal Evaluations (CIE-1, CIE-2, CIE-3)</div>
+                    <div class="academic-card-subtitle">${cieSubtitle}</div>
                     <div class="academic-card-footer">
                         <span class="cie-pill-badge">Internal Assessments</span>
                         <span class="academic-card-arrow">→</span>
@@ -247,8 +252,20 @@ function renderExamTypeSelection(state) {
     `;
 }
 
+function isTwoCieSemester(sem) {
+    if (branch === "First Year") return true;
+    if (!sem) return false;
+    const match = String(sem).match(/\d+/);
+    if (match) {
+        const num = parseInt(match[0], 10);
+        return num === 1 || num === 2;
+    }
+    return false;
+}
+
 function renderCieNumberSelection(state) {
-    const cieOptions = ["CIE-1", "CIE-2", "CIE-3"];
+    const isTwoCie = isTwoCieSemester(state.sem);
+    const cieOptions = isTwoCie ? ["CIE-1", "CIE-2"] : ["CIE-1", "CIE-2", "CIE-3"];
     const cardsHtml = cieOptions.map(cieNum => {
         const count = papers.filter(p =>
             p.semester === state.sem &&
@@ -575,9 +592,15 @@ function renderPapers() {
         return;
     }
 
-    if (state.type === "CIE Examinations" && !state.cie) {
-        renderCieNumberSelection(state);
-        return;
+    if (state.type === "CIE Examinations") {
+        if (isTwoCieSemester(state.sem) && state.cie === "CIE-3") {
+            setAcademicState({ sem: state.sem, type: state.type }, true);
+            return;
+        }
+        if (!state.cie) {
+            renderCieNumberSelection(state);
+            return;
+        }
     }
 
     if (!state.year) {
