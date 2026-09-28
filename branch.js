@@ -203,7 +203,7 @@ function renderExamTypeSelection(state) {
     const legacyPapers = semPapers.filter(p => p.year && Number(p.year) < 2025);
     const legacyHtml = renderLegacyArchiveBox(legacyPapers, `Earlier Years Archive for ${escapeHtml(state.sem)} (Pre-2025)`);
 
-    const isTwoCie = isTwoCieSemester(state.sem);
+    const isTwoCie = isTwoCieAcademicYear(state.sem);
     const cieSubtitle = isTwoCie
         ? "Continuous Internal Evaluations (CIE-1, CIE-2)"
         : "Continuous Internal Evaluations (CIE-1, CIE-2, CIE-3)";
@@ -252,19 +252,36 @@ function renderExamTypeSelection(state) {
     `;
 }
 
-function isTwoCieSemester(sem) {
-    if (branch === "First Year") return true;
-    if (!sem) return false;
+function getAcademicYear(sem) {
+    if (branch === "First Year") return "First Year";
+    if (!sem) return "";
     const match = String(sem).match(/\d+/);
     if (match) {
         const num = parseInt(match[0], 10);
-        return num === 1 || num === 2;
+        if (num === 1 || num === 2) return "First Year";
+        if (num === 3 || num === 4) return "2nd Year";
+        if (num === 5 || num === 6) return "3rd Year";
+        if (num === 7 || num === 8) return "4th Year";
     }
-    return false;
+    const lower = String(sem).toLowerCase();
+    if (lower.includes("1st") || lower.includes("2nd") || lower.includes("first")) return "First Year";
+    if (lower.includes("3rd") || lower.includes("4th") || lower.includes("second")) return "2nd Year";
+    if (lower.includes("5th") || lower.includes("6th") || lower.includes("third")) return "3rd Year";
+    if (lower.includes("7th") || lower.includes("8th") || lower.includes("fourth")) return "4th Year";
+    return "";
+}
+
+function isTwoCieAcademicYear(sem) {
+    const academicYear = getAcademicYear(sem);
+    return academicYear === "First Year" || academicYear === "2nd Year";
+}
+
+function isTwoCieSemester(sem) {
+    return isTwoCieAcademicYear(sem);
 }
 
 function renderCieNumberSelection(state) {
-    const isTwoCie = isTwoCieSemester(state.sem);
+    const isTwoCie = isTwoCieAcademicYear(state.sem);
     const cieOptions = isTwoCie ? ["CIE-1", "CIE-2"] : ["CIE-1", "CIE-2", "CIE-3"];
     const cardsHtml = cieOptions.map(cieNum => {
         const count = papers.filter(p =>
@@ -593,7 +610,7 @@ function renderPapers() {
     }
 
     if (state.type === "CIE Examinations") {
-        if (isTwoCieSemester(state.sem) && state.cie === "CIE-3") {
+        if (isTwoCieAcademicYear(state.sem) && state.cie === "CIE-3") {
             setAcademicState({ sem: state.sem, type: state.type }, true);
             return;
         }
