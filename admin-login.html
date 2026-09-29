@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Library Admin Portal - MCE PYQ Hub</title>
+    <title>Department Administrator Portal - MCE PYQ Hub</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css?v=17.0">
-    <link rel="stylesheet" href="/admin.css?v=1.0">
+    <link rel="stylesheet" href="/style.css?v=18.0">
+    <link rel="stylesheet" href="/admin.css?v=2.1">
     <!-- Immediate PWA & Cache Purge Killswitch -->
     <script>
         (function() {
@@ -41,10 +41,10 @@
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 </svg>
-                <span>LIBRARY &amp; DATABASE MANAGEMENT</span>
+                <span>MALNAD COLLEGE OF ENGINEERING &bull; AUTONOMOUS</span>
             </div>
-            <h1>Library Admin Portal</h1>
-            <p>Publish verified previous year examination question papers across all engineering departments and semesters.</p>
+            <h1>Department Administrator Portal</h1>
+            <p>Official examination repository gateway for department faculty coordinators to upload, verify, and curate autonomous examination question papers.</p>
         </div>
     </section>
 
@@ -52,14 +52,14 @@
     <div class="admin-breadcrumbs-wrap">
         <a href="/">Home</a>
         <span class="separator">/</span>
-        <span class="current">Library Admin</span>
+        <span class="current">Department Admin Portal</span>
     </div>
 
     <!-- ================= MAIN CONTAINER ================= -->
     <main class="admin-login-main">
 
-        <!-- 3 Stat Cards Strip (Matches Mockup) -->
-        <section class="admin-stats-strip" aria-label="Library Overview Statistics">
+        <!-- 3 Stat Cards Strip -->
+        <section class="admin-stats-strip" aria-label="Portal Overview Statistics">
             <!-- Card 1: Total Question Papers -->
             <div class="admin-stat-card stat-blue">
                 <div class="stat-icon-wrap">
@@ -77,7 +77,7 @@
                 </div>
             </div>
 
-            <!-- Card 2: Active Branches -->
+            <!-- Card 2: Active Department Portals -->
             <div class="admin-stat-card stat-green">
                 <div class="stat-icon-wrap">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,8 +92,8 @@
                     </svg>
                 </div>
                 <div class="stat-content">
-                    <span class="stat-label">ACTIVE BRANCHES</span>
-                    <span class="stat-value" id="statBranches">0</span>
+                    <span class="stat-label">DEPARTMENT PORTALS</span>
+                    <span class="stat-value" id="statBranches">6</span>
                 </div>
             </div>
 
@@ -113,107 +113,288 @@
             </div>
         </section>
 
-        <!-- Administrator Authentication Card (Matches Mockup) -->
-        <section class="admin-auth-card">
-            <div class="admin-restricted-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                <span>RESTRICTED AREA</span>
-            </div>
-
-            <h2>Administrator Authentication</h2>
-            <p class="auth-subtitle">Please enter your master admin password to upload or manage question papers.</p>
-
-            <form id="adminLoginForm" class="admin-login-form" autocomplete="on">
-                <!-- Optional Username / Email field (expandable) -->
-                <div id="emailFieldGroup" class="admin-form-group" style="display: none;">
-                    <label for="adminEmail">ADMIN EMAIL / USERNAME</label>
-                    <div class="admin-input-wrapper">
-                        <span class="input-icon-left">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </span>
-                        <input type="text" id="adminEmail" name="username" placeholder="admin@mce.ac.in or username" value="admin@mce.ac.in" autocomplete="username">
-                    </div>
-                </div>
-
-                <!-- Department Selection (Required) -->
-                <div class="admin-form-group">
-                    <label for="adminDepartment">DEPARTMENT</label>
-                    <div class="admin-input-wrapper">
-                        <span class="input-icon-left">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                            </svg>
-                        </span>
-                        <select id="adminDepartment" name="department" class="admin-form-control" style="width: 100%; height: 44px; padding-left: 40px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;" required>
-                            <option value="" disabled selected>-- Select Your Department --</option>
-                            <option value="ECE">Electronics &amp; Communication (ECE)</option>
-                            <option value="CSE">Computer Science &amp; Engineering (CSE)</option>
-                            <option value="CSE(AI&ML)">AI &amp; Machine Learning (CSE-AIML)</option>
-                            <option value="Mechanical">Mechanical Engineering</option>
-                            <option value="Civil">Civil Engineering</option>
-                            <option value="First Year">First Year (Physics &amp; Chemistry Cycle)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Password input with lock icon -->
-                <div class="admin-form-group">
-                    <label for="adminPassword">ADMIN PASSWORD</label>
-                    <div class="admin-input-wrapper">
-                        <span class="input-icon-left">
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                        </span>
-                        <input type="password" id="adminPassword" name="password" placeholder="Enter administrator password" required autocomplete="current-password" autofocus>
-                        <button type="button" id="togglePasswordBtn" class="input-toggle-btn" title="Toggle password visibility" aria-label="Toggle password visibility">
-                            <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                <circle cx="12" cy="12" r="3"></circle>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="btnSubmitLogin" class="btn-admin-signin">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                        <polyline points="10 17 15 12 10 7"></polyline>
-                        <line x1="15" y1="12" x2="3" y2="12"></line>
+        <!-- Centered Administrator Authentication Card -->
+        <div class="admin-login-card-container">
+            <section class="admin-auth-card">
+                <div class="admin-restricted-badge">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                     </svg>
-                    <span>Sign in to Dashboard</span>
-                </button>
-
-                <!-- Subtle toggle for alternate admin account -->
-                <button type="button" id="toggleEmailField" class="admin-login-extra-toggle">
-                    Use specific administrator email account &rarr;
-                </button>
-
-                <!-- Feedback alert container -->
-                <div id="loginAlert" class="admin-alert-banner admin-alert-danger" style="display: none;" role="alert">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                    </svg>
-                    <span id="loginAlertText">Invalid administrator password.</span>
+                    <span>RESTRICTED ACCESS &bull; DEPARTMENT COORDINATORS ONLY</span>
                 </div>
-            </form>
-        </section>
+
+                <h2>Department Administrator Authentication</h2>
+                <p class="auth-subtitle">Select your engineering department and authenticate with your department credentials to manage examination papers.</p>
+
+                <form id="adminLoginForm" class="admin-login-form" autocomplete="on">
+                    <!-- Department Selection Options (Attractive Interactive Grid) -->
+                    <div class="admin-form-group">
+                        <div class="dept-options-header">
+                            <label for="adminDepartment">SELECT YOUR DEPARTMENT *</label>
+                            <span class="dept-options-counter">6 Autonomous Branches</span>
+                        </div>
+                        
+                        <div class="dept-options-grid" id="deptOptionsGrid" role="radiogroup" aria-label="Engineering Department">
+                            <!-- ECE -->
+                            <button type="button" class="dept-option-card" data-dept="ECE" role="radio" aria-checked="false" tabindex="0">
+                                <div class="dept-card-top">
+                                    <span class="dept-code-pill pill-ece">ECE</span>
+                                    <span class="dept-check-indicator" aria-hidden="true">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dept-card-icon-wrap icon-ece">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4.93 19.07a10 10 0 0 1 0-14.14M19.07 4.93a10 10 0 0 1 0 14.14M7.76 16.24a6 6 0 0 1 0-8.48M16.24 7.76a6 6 0 0 1 0 8.48M12 12h.01"></path>
+                                    </svg>
+                                </div>
+                                <div class="dept-card-body">
+                                    <div class="dept-card-name">Electronics &amp; Comm.</div>
+                                    <div class="dept-card-desc">ECE Department</div>
+                                </div>
+                            </button>
+
+                            <!-- CSE -->
+                            <button type="button" class="dept-option-card" data-dept="CSE" role="radio" aria-checked="false" tabindex="0">
+                                <div class="dept-card-top">
+                                    <span class="dept-code-pill pill-cse">CSE</span>
+                                    <span class="dept-check-indicator" aria-hidden="true">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dept-card-icon-wrap icon-cse">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="16 18 22 12 16 6"></polyline>
+                                        <polyline points="8 6 2 12 8 18"></polyline>
+                                        <line x1="14" y1="4" x2="10" y2="20"></line>
+                                    </svg>
+                                </div>
+                                <div class="dept-card-body">
+                                    <div class="dept-card-name">Computer Science</div>
+                                    <div class="dept-card-desc">CSE Department</div>
+                                </div>
+                            </button>
+
+                            <!-- AI & ML -->
+                            <button type="button" class="dept-option-card" data-dept="CSE(AI&ML)" role="radio" aria-checked="false" tabindex="0">
+                                <div class="dept-card-top">
+                                    <span class="dept-code-pill pill-aiml">AI &amp; ML</span>
+                                    <span class="dept-check-indicator" aria-hidden="true">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dept-card-icon-wrap icon-aiml">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+                                        <rect x="4" y="8" width="16" height="12" rx="2"></rect>
+                                        <circle cx="9" cy="13" r="1"></circle>
+                                        <circle cx="15" cy="13" r="1"></circle>
+                                        <path d="M9 17h6"></path>
+                                    </svg>
+                                </div>
+                                <div class="dept-card-body">
+                                    <div class="dept-card-name">AI &amp; Machine Learning</div>
+                                    <div class="dept-card-desc">CSE-AIML Dept</div>
+                                </div>
+                            </button>
+
+                            <!-- MECH -->
+                            <button type="button" class="dept-option-card" data-dept="Mechanical" role="radio" aria-checked="false" tabindex="0">
+                                <div class="dept-card-top">
+                                    <span class="dept-code-pill pill-mech">MECH</span>
+                                    <span class="dept-check-indicator" aria-hidden="true">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dept-card-icon-wrap icon-mech">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                    </svg>
+                                </div>
+                                <div class="dept-card-body">
+                                    <div class="dept-card-name">Mechanical Engg.</div>
+                                    <div class="dept-card-desc">Mechanical Dept</div>
+                                </div>
+                            </button>
+
+                            <!-- CIVIL -->
+                            <button type="button" class="dept-option-card" data-dept="Civil" role="radio" aria-checked="false" tabindex="0">
+                                <div class="dept-card-top">
+                                    <span class="dept-code-pill pill-civil">CIVIL</span>
+                                    <span class="dept-check-indicator" aria-hidden="true">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dept-card-icon-wrap icon-civil">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v4M12 14v4M16 14v4"></path>
+                                    </svg>
+                                </div>
+                                <div class="dept-card-body">
+                                    <div class="dept-card-name">Civil Engineering</div>
+                                    <div class="dept-card-desc">Civil Dept</div>
+                                </div>
+                            </button>
+
+                            <!-- 1st YEAR -->
+                            <button type="button" class="dept-option-card" data-dept="First Year" role="radio" aria-checked="false" tabindex="0">
+                                <div class="dept-card-top">
+                                    <span class="dept-code-pill pill-fy">1st YEAR</span>
+                                    <span class="dept-check-indicator" aria-hidden="true">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+                                <div class="dept-card-icon-wrap icon-fy">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                                        <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                                    </svg>
+                                </div>
+                                <div class="dept-card-body">
+                                    <div class="dept-card-name">First Year Cycle</div>
+                                    <div class="dept-card-desc">Physics &amp; Chemistry</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Fallback / Underlying Select (Synchronized) -->
+                        <div class="admin-select-fallback-wrap">
+                            <div class="admin-input-wrapper">
+                                <span class="input-icon-left">
+                                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                    </svg>
+                                </span>
+                                <select id="adminDepartment" name="department" class="admin-select-input" required>
+                                    <option value="" disabled selected>-- Or Select Department from List --</option>
+                                    <option value="ECE">Electronics &amp; Communication Engineering (ECE)</option>
+                                    <option value="CSE">Computer Science &amp; Engineering (CSE)</option>
+                                    <option value="CSE(AI&ML)">AI &amp; Machine Learning (CSE-AIML)</option>
+                                    <option value="Mechanical">Mechanical Engineering</option>
+                                    <option value="Civil">Civil Engineering</option>
+                                    <option value="First Year">First Year (Physics &amp; Chemistry Cycle)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Department Admin Email / Username (Auto-filled on department select, editable) -->
+                    <div class="admin-form-group">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label for="adminEmail">DEPARTMENT ADMIN EMAIL / ID *</label>
+                            <span id="deptEmailHint" style="font-size: 11px; color: var(--admin-accent); font-weight: 700; display: none;">Auto-filled</span>
+                        </div>
+                        <div class="admin-input-wrapper">
+                            <span class="input-icon-left">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </span>
+                            <input type="text" id="adminEmail" name="username" placeholder="Select department or enter official email" required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <!-- Password input with lock icon -->
+                    <div class="admin-form-group">
+                        <label for="adminPassword">DEPARTMENT PASSWORD *</label>
+                        <div class="admin-input-wrapper">
+                            <span class="input-icon-left">
+                                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input type="password" id="adminPassword" name="password" placeholder="Enter department administrator password" required autocomplete="current-password">
+                            <button type="button" id="togglePasswordBtn" class="input-toggle-btn" title="Toggle password visibility" aria-label="Toggle password visibility">
+                                <svg id="eyeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button with Dynamic Text and Interactive Arrow -->
+                    <button type="submit" id="btnSubmitLogin" class="btn-admin-signin btn-signin-full">
+                        <span class="btn-text" id="btnSubmitText">Sign in to Department Dashboard</span>
+                        <svg class="btn-arrow-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+
+                    <!-- Feedback alert container -->
+                    <div id="loginAlert" class="admin-alert-banner admin-alert-danger" style="display: none;" role="alert">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="loginAlertText">Invalid department administrator credentials.</span>
+                    </div>
+
+                    <!-- Security Badge Note -->
+                    <div class="admin-security-note">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        </svg>
+                        <span><strong>Branch Isolation Enforced:</strong> Each Department Admin has exclusive access to their assigned branch. Cross-department modifications are forbidden.</span>
+                    </div>
+
+                    <!-- Return Link (Attractive Ghost Button) -->
+                    <div style="text-align: center; margin-top: 12px;">
+                        <a href="/" class="btn-return-link">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            <span>Return to Student PYQ Hub</span>
+                        </a>
+                    </div>
+                </form>
+            </section>
+        </div>
     </main>
 
     <!-- Page Script -->
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
+            const DEPT_EMAILS = {
+                "ECE": "ece_admin@mce.ac.in",
+                "CSE": "cse_admin@mce.ac.in",
+                "CSE(AI&ML)": "aiml_admin@mce.ac.in",
+                "Mechanical": "mech_admin@mce.ac.in",
+                "Civil": "civil_admin@mce.ac.in",
+                "First Year": "firstyear_admin@mce.ac.in"
+            };
+
+            const deptSelect = document.getElementById('adminDepartment');
+            const emailInput = document.getElementById('adminEmail');
+            const emailHint = document.getElementById('deptEmailHint');
+            const passwordInput = document.getElementById('adminPassword');
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const eyeIcon = document.getElementById('eyeIcon');
+            const form = document.getElementById('adminLoginForm');
+            const submitBtn = document.getElementById('btnSubmitLogin');
+            const alertBox = document.getElementById('loginAlert');
+            const alertText = document.getElementById('loginAlertText');
+
             // 1. Check if user is already authenticated
             try {
                 const authCheck = await fetch('/api/admin/status');
@@ -232,18 +413,84 @@
                 if (statsRes.ok) {
                     const stats = await statsRes.json();
                     document.getElementById('statPapers').textContent = Number(stats.total_papers || 0).toLocaleString();
-                    document.getElementById('statBranches').textContent = stats.active_branches || 8;
+                    document.getElementById('statBranches').textContent = 6;
                     document.getElementById('statSubjects').textContent = stats.total_subjects || 0;
                 }
             } catch (e) {
                 console.warn("Stats fetch fallback", e);
             }
 
-            // 3. Toggle password visibility
-            const passwordInput = document.getElementById('adminPassword');
-            const toggleBtn = document.getElementById('togglePasswordBtn');
-            const eyeIcon = document.getElementById('eyeIcon');
-            
+            // 3. Department Selection -> Synchronize Cards, Dropdown, Auto-fill Email & Update Button Label
+            const deptCards = document.querySelectorAll('.dept-option-card');
+            const DEPT_DISPLAY_NAMES = {
+                "ECE": "ECE",
+                "CSE": "CSE",
+                "CSE(AI&ML)": "AI & ML",
+                "Mechanical": "Mechanical",
+                "Civil": "Civil",
+                "First Year": "First Year"
+            };
+
+            function selectDepartment(deptKey, autoFocus = true) {
+                if (!deptKey) return;
+                deptSelect.value = deptKey;
+
+                deptCards.forEach(card => {
+                    const isMatch = card.getAttribute('data-dept') === deptKey;
+                    card.classList.toggle('active', isMatch);
+                    card.setAttribute('aria-checked', isMatch ? 'true' : 'false');
+                });
+
+                if (DEPT_EMAILS[deptKey]) {
+                    emailInput.value = DEPT_EMAILS[deptKey];
+                    emailHint.style.display = 'inline';
+                }
+
+                const displayName = DEPT_DISPLAY_NAMES[deptKey] || deptKey;
+                const btnTextEl = document.getElementById('btnSubmitText');
+                if (btnTextEl) {
+                    btnTextEl.textContent = `Sign in to ${displayName} Admin Portal`;
+                }
+
+                if (autoFocus) {
+                    passwordInput.focus();
+                }
+            }
+
+            deptCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const chosen = this.getAttribute('data-dept');
+                    selectDepartment(chosen, true);
+                });
+
+                card.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            deptSelect.addEventListener('change', function() {
+                selectDepartment(deptSelect.value, true);
+            });
+
+            function restoreSubmitBtn() {
+                submitBtn.disabled = false;
+                const chosen = deptSelect.value;
+                const displayName = chosen ? (DEPT_DISPLAY_NAMES[chosen] || chosen) : "";
+                const label = displayName ? `Sign in to ${displayName} Admin Portal` : `Sign in to Department Dashboard`;
+                submitBtn.innerHTML = `
+                    <span class="btn-text" id="btnSubmitText">${label}</span>
+                    <svg class="btn-arrow-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                `;
+            }
+
+            // 4. Toggle password visibility
             toggleBtn.addEventListener('click', function() {
                 const isPassword = passwordInput.getAttribute('type') === 'password';
                 passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
@@ -252,50 +499,33 @@
                     : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
             });
 
-            // 4. Toggle specific email field
-            const emailGroup = document.getElementById('emailFieldGroup');
-            const toggleEmailBtn = document.getElementById('toggleEmailField');
-            let isEmailVisible = false;
-
-            toggleEmailBtn.addEventListener('click', function() {
-                isEmailVisible = !isEmailVisible;
-                emailGroup.style.display = isEmailVisible ? 'flex' : 'none';
-                toggleEmailBtn.textContent = isEmailVisible 
-                    ? 'Hide administrator email field' 
-                    : 'Use specific administrator email account →';
-            });
-
             // 5. Form submission
-            const form = document.getElementById('adminLoginForm');
-            const submitBtn = document.getElementById('btnSubmitLogin');
-            const alertBox = document.getElementById('loginAlert');
-            const alertText = document.getElementById('loginAlertText');
-
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 alertBox.style.display = 'none';
 
+                const department = deptSelect.value;
+                const email = emailInput.value.trim() || DEPT_EMAILS[department] || '';
                 const password = passwordInput.value;
-                const email = document.getElementById('adminEmail').value.trim() || 'admin@mce.ac.in';
-                const department = document.getElementById('adminDepartment').value;
 
                 if (!department) {
-                    showAlert('Please select your department.');
+                    showAlert('Please select your engineering department from the options above.');
                     return;
                 }
 
                 if (!password) {
-                    showAlert('Please enter your administrator password.');
+                    showAlert('Please enter your department administrator password.');
+                    passwordInput.focus();
                     return;
                 }
 
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = `
-                    <svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                        <circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle>
-                        <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path>
+                    <svg class="animate-spin" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity="0.25"></circle>
+                        <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-linecap="round"></path>
                     </svg>
-                    <span>Authenticating...</span>
+                    <span>Authenticating Department...</span>
                 `;
 
                 try {
@@ -314,36 +544,20 @@
 
                     if (response.ok) {
                         alertBox.className = 'admin-alert-banner admin-alert-success';
-                        alertText.textContent = 'Access granted! Opening Admin Dashboard...';
+                        alertText.textContent = `Access granted! Opening ${department} Department Dashboard...`;
                         alertBox.style.display = 'flex';
                         
                         setTimeout(() => {
                             window.location.replace(data.redirect || '/admin/dashboard');
-                        }, 500);
+                        }, 400);
                     } else {
-                        showAlert(data.error || 'Invalid administrator password. Access denied.');
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = `
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                <polyline points="10 17 15 12 10 7"></polyline>
-                                <line x1="15" y1="12" x2="3" y2="12"></line>
-                            </svg>
-                            <span>Sign in to Dashboard</span>
-                        `;
+                        showAlert(data.error || 'Invalid department administrator credentials.');
+                        restoreSubmitBtn();
                         passwordInput.focus();
                     }
                 } catch (err) {
                     showAlert('Network error connecting to authentication server. Please try again.');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                            <polyline points="10 17 15 12 10 7"></polyline>
-                            <line x1="15" y1="12" x2="3" y2="12"></line>
-                        </svg>
-                        <span>Sign in to Dashboard</span>
-                    `;
+                    restoreSubmitBtn();
                 }
             });
 
@@ -356,4 +570,3 @@
     </script>
 </body>
 </html>
-

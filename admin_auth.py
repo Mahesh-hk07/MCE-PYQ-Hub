@@ -176,33 +176,29 @@ def authenticate_user(email_or_username: str, password: str, department: str = N
         conn.row_factory = sqlite3.Row
         user = None
 
-        # 1. If explicit department selected, find that department admin
-        if target_branch:
+        # 1. If a specific identifier is provided, look up the user by that identifier
+        if identifier and identifier not in ["admin", "administrator", "admin@mce.ac.in"]:
+            if identifier in DEPARTMENT_SHORTCUTS:
+                sc_branch = DEPARTMENT_SHORTCUTS[identifier]
+                user = conn.execute(
+                    "SELECT * FROM users WHERE branch = ? LIMIT 1",
+                    (sc_branch,)
+                ).fetchone()
+            else:
+                user = conn.execute(
+                    "SELECT * FROM users WHERE LOWER(email) = ? OR LOWER(name) = ? LIMIT 1",
+                    (identifier, identifier)
+                ).fetchone()
+
+            # If target_branch was specified and does not match the identified user's branch, reject
+            if user and target_branch and user["branch"] and user["branch"].strip().lower() != target_branch.strip().lower():
+                return None
+
+        # 2. If user not yet identified and target_branch is specified, get that department's admin
+        if not user and target_branch:
             user = conn.execute(
                 "SELECT * FROM users WHERE branch = ? OR branch = ? LIMIT 1",
                 (target_branch, department)
-            ).fetchone()
-
-        # 2. Look up by shortcut username if user not yet found
-        if not user and identifier in DEPARTMENT_SHORTCUTS:
-            sc_branch = DEPARTMENT_SHORTCUTS[identifier]
-            user = conn.execute(
-                "SELECT * FROM users WHERE branch = ? LIMIT 1",
-                (sc_branch,)
-            ).fetchone()
-
-        # 3. Look up by direct email or name
-        if not user and identifier:
-            user = conn.execute(
-                "SELECT * FROM users WHERE LOWER(email) = ? OR LOWER(name) = ? LIMIT 1",
-                (identifier, identifier)
-            ).fetchone()
-
-        # 4. Fallback: if username is 'admin' and target_branch is specified, get that department's admin
-        if not user and identifier in ["admin", "administrator", "admin@mce.ac.in"] and target_branch:
-            user = conn.execute(
-                "SELECT * FROM users WHERE branch = ? LIMIT 1",
-                (target_branch,)
             ).fetchone()
 
         if user and verify_password(password, user["password_hash"]):
@@ -279,15 +275,21 @@ def log_activity(user_email: str, action: str, details: str = ""):
         pass
 
 
-def get_recent_logs(limit: int = 50):
-    """Retrieve recent activity logs."""
+def get_recent_logs(limit: int = 50, user_email: str = None):
+    """Retrieve recent activity logs, optionally filtered by user_email."""
     try:
         with sqlite3.connect(USERS_DB) as conn:
             conn.row_factory = sqlite3.Row
-            rows = conn.execute(
-                "SELECT * FROM activity_logs ORDER BY id DESC LIMIT ?",
-                (limit,)
-            ).fetchall()
+            if user_email:
+                rows = conn.execute(
+                    "SELECT * FROM activity_logs WHERE user_email = ? ORDER BY id DESC LIMIT ?",
+                    (user_email, limit)
+                ).fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT * FROM activity_logs ORDER BY id DESC LIMIT ?",
+                    (limit,)
+                ).fetchall()
             return [dict(r) for r in rows]
     except Exception:
         return []

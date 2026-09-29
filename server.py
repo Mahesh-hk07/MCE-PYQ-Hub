@@ -860,7 +860,9 @@ class RequestHandler(SimpleHTTPRequestHandler):
             if not self.is_admin():
                 self.send_json(401, {"error": "Admin login required"})
                 return
-            self.send_json(200, {"logs": admin_auth.get_recent_logs(50)})
+            admin_user = self.get_current_user()
+            user_email = admin_user.get("email") if (admin_user and admin_user.get("branch")) else None
+            self.send_json(200, {"logs": admin_auth.get_recent_logs(50, user_email=user_email)})
             return
 
         # =========================================

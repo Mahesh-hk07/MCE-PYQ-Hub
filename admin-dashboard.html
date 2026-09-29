@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MCE Library Admin Dashboard - MCE PYQ Hub</title>
+    <title>MCE Department Admin Dashboard - MCE PYQ Hub</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/style.css?v=17.0">
-    <link rel="stylesheet" href="/admin.css?v=1.0">
+    <link rel="stylesheet" href="/style.css?v=18.0">
+    <link rel="stylesheet" href="/admin.css?v=2.1">
     <!-- Immediate PWA & Cache Purge Killswitch -->
     <script>
         (function() {
@@ -41,7 +41,7 @@
                 <img src="/mce-logo.png" alt="MCE Logo" class="sidebar-logo">
                 <div class="sidebar-brand-text">
                     <h3>MCE PYQ Hub</h3>
-                    <span>Library Administration</span>
+                    <span id="sidebarBrandSub">Department Admin Portal</span>
                 </div>
             </div>
 
@@ -89,7 +89,7 @@
                         <line x1="12" y1="14" x2="12" y2="17"></line>
                         <line x1="16" y1="14" x2="16" y2="17"></line>
                     </svg>
-                    <span>Departments (8)</span>
+                    <span id="sidebarDeptLinkText">Department Profile</span>
                 </button>
 
                 <button type="button" class="sidebar-link" data-tab="subjects">
@@ -175,7 +175,7 @@
                     </button>
                     <div class="topbar-title-wrap">
                         <h2 id="currentTabTitle">Dashboard Overview</h2>
-                        <span id="currentTabSubtitle">Malnad College of Engineering - Autonomous Library Database</span>
+                        <span id="currentTabSubtitle">Malnad College of Engineering — Autonomous Examination Repository</span>
                     </div>
                 </div>
 
@@ -228,14 +228,12 @@
 
                         <div class="overview-card">
                             <div class="overview-card-info">
-                                <div class="label">Active Branches</div>
-                                <div class="number" id="overviewBranches">8</div>
+                                <div class="label" id="overviewBranchesLabel">Assigned Department</div>
+                                <div class="number" id="overviewBranches" style="font-size: 22px;">-</div>
                             </div>
                             <div class="overview-card-icon" style="background: #ecfdf5; color: #10b981;">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="5 6 12 3 19 6"></polyline>
-                                    <line x1="3" y1="21" x2="21" y2="21"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                                 </svg>
                             </div>
                         </div>
@@ -596,8 +594,8 @@
                     <div class="admin-panel">
                         <div class="panel-header">
                             <div class="panel-header-title">
-                                <h3>Engineering Departments &amp; Branches</h3>
-                                <p>Repository distribution across all engineering branches at Malnad College of Engineering.</p>
+                                <h3 id="departmentsTabTitle">Department Profile</h3>
+                                <p id="departmentsTabSubtitle">Examination paper statistics and structure for your assigned department.</p>
                             </div>
                         </div>
                         <div class="panel-body">

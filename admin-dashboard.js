@@ -52,12 +52,22 @@ async function verifyAdminSession() {
 function applyBranchRestrictions(branch) {
     if (!branch) return;
 
-    // 1. Update Badge
+    // 1. Update Badges, Avatar, and Brand Text
     const badge = document.getElementById("adminBranchBadge");
     if (badge) {
         badge.textContent = `${branch} Admin`;
         badge.style.fontWeight = "600";
         badge.style.color = "#38bdf8";
+    }
+
+    const brandSub = document.getElementById("sidebarBrandSub");
+    if (brandSub) {
+        brandSub.textContent = `${branch} Admin Portal`;
+    }
+
+    const deptLinkText = document.getElementById("sidebarDeptLinkText");
+    if (deptLinkText) {
+        deptLinkText.textContent = `${branch} Department`;
     }
 
     // 2. Set Student View Link to assigned department page
@@ -73,18 +83,24 @@ function applyBranchRestrictions(branch) {
     if (studentViewLink && branchMap[branch]) {
         studentViewLink.href = branchMap[branch];
         studentViewLink.setAttribute("title", `Open ${branch} Student View`);
+        const span = studentViewLink.querySelector("span");
+        if (span) span.textContent = `${branch} Student View`;
     }
 
-    // 3. Lock Upload form branch to assigned department
+    // 3. Update Overview Tab second card
+    const branchesLabel = document.getElementById("overviewBranchesLabel");
+    if (branchesLabel) {
+        branchesLabel.textContent = "Assigned Department";
+    }
+    const overviewBranches = document.getElementById("overviewBranches");
+    if (overviewBranches) {
+        overviewBranches.textContent = branch;
+    }
+
+    // 4. Lock Upload form branch to assigned department ONLY
     const uploadBranchSelect = document.getElementById("uploadBranch");
     if (uploadBranchSelect) {
-        uploadBranchSelect.value = branch;
-        Array.from(uploadBranchSelect.options).forEach(opt => {
-            if (opt.value !== branch) {
-                opt.disabled = true;
-                opt.style.display = "none";
-            }
-        });
+        uploadBranchSelect.innerHTML = `<option value="${escapeHtml(branch)}" selected>${escapeHtml(branch)}</option>`;
         uploadBranchSelect.style.pointerEvents = "none";
         uploadBranchSelect.style.backgroundColor = "var(--admin-card-bg)";
 
@@ -100,36 +116,38 @@ function applyBranchRestrictions(branch) {
                 opt.textContent = s;
                 semesterSelect.appendChild(opt);
             });
+            semesterSelect.addEventListener("change", updateUploadCieOptions);
         }
     }
 
-    // 4. Lock Repository Filter to assigned department
+    // 5. Lock Repository Filter to assigned department ONLY
     const filterBranchSelect = document.getElementById("filterBranchSelect");
     if (filterBranchSelect) {
+        filterBranchSelect.innerHTML = `<option value="${escapeHtml(branch)}" selected>${escapeHtml(branch)} Department</option>`;
         filterBranchSelect.value = branch;
-        Array.from(filterBranchSelect.options).forEach(opt => {
-            if (opt.value !== branch) {
-                opt.disabled = true;
-                opt.style.display = "none";
-            }
-        });
         filterBranchSelect.style.pointerEvents = "none";
     }
 
-    // 5. Hide other branch pills
-    const pills = document.querySelectorAll(".btn-branch-pill");
-    pills.forEach(p => {
-        const pBranch = p.getAttribute("data-branch");
-        if (pBranch === branch) {
-            p.classList.add("active");
-            p.style.display = "inline-flex";
-        } else {
-            p.classList.remove("active");
-            p.style.display = "none";
-        }
-    });
+    // 6. Hide other branch pills, display only assigned department pill
+    const pillsRow = document.getElementById("branchPillsRow");
+    if (pillsRow) {
+        pillsRow.innerHTML = `<button type="button" class="btn-branch-pill active" data-branch="${escapeHtml(branch)}">${escapeHtml(branch)}</button>`;
+    }
 
-    // 6. Hide "Manage Admins" tab in sidebar (strictly Department Admins)
+    // 7. Personalize Clear All button
+    const clearRepoBtn = document.getElementById("btnClearEntireRepo");
+    if (clearRepoBtn) {
+        const span = clearRepoBtn.querySelector("span");
+        if (span) span.textContent = `Clear All ${branch} Papers`;
+    }
+
+    // 8. Update Departments tab header
+    const deptTitle = document.getElementById("departmentsTabTitle");
+    const deptSubtitle = document.getElementById("departmentsTabSubtitle");
+    if (deptTitle) deptTitle.textContent = `${branch} Department Profile`;
+    if (deptSubtitle) deptSubtitle.textContent = `Academic structure and examination metrics for ${branch}`;
+
+    // 9. Hide "Manage Admins" tab in sidebar (strictly Department Admins)
     const userTabLink = document.querySelector('.sidebar-link[data-tab="users"]');
     if (userTabLink) {
         userTabLink.style.display = "none";
@@ -202,6 +220,24 @@ function setupNavigation() {
     }
 }
 
+function updateUploadCieOptions() {
+    const semSelect = document.getElementById("uploadSemester");
+    const cieSelect = document.getElementById("uploadCieNumber");
+    if (!semSelect || !cieSelect) return;
+    const sem = semSelect.value;
+    const semNum = parseInt(sem) || 1;
+    // 1st Year (sem 1-2) and 2nd Year (sem 3-4): 2 CIEs (CIE-1, CIE-2)
+    // 3rd Year (sem 5-6) and 4th Year (sem 7-8): 3 CIEs (CIE-1, CIE-2, CIE-3)
+    const maxCie = (semNum <= 4) ? 2 : 3;
+    cieSelect.innerHTML = '<option value="">Select CIE Number</option>';
+    for (let i = 1; i <= maxCie; i++) {
+        const opt = document.createElement("option");
+        opt.value = `CIE-${i}`;
+        opt.textContent = `CIE-${i}`;
+        cieSelect.appendChild(opt);
+    }
+}
+
 function switchAdminTab(tabName) {
     document.querySelectorAll(".sidebar-link").forEach(l => l.classList.remove("active"));
     const targetLink = document.querySelector(`.sidebar-link[data-tab="${tabName}"]`);
@@ -211,9 +247,42 @@ function switchAdminTab(tabName) {
     const targetView = document.getElementById(`tab-${tabName}`);
     if (targetView) targetView.classList.add("active");
 
-    const meta = TAB_TITLES[tabName] || { title: "Admin Portal", subtitle: "MCE PYQ Hub" };
-    document.getElementById("currentTabTitle").textContent = meta.title;
-    document.getElementById("currentTabSubtitle").textContent = meta.subtitle;
+    const branch = (currentAdminUser && currentAdminUser.branch) ? currentAdminUser.branch : "";
+    if (branch) {
+        if (tabName === "overview") {
+            document.getElementById("currentTabTitle").textContent = `${branch} Dashboard Overview`;
+            document.getElementById("currentTabSubtitle").textContent = `Malnad College of Engineering — Autonomous ${branch} Examination Repository`;
+        } else if (tabName === "papers") {
+            document.getElementById("currentTabTitle").textContent = `${branch} Question Papers`;
+            document.getElementById("currentTabSubtitle").textContent = `Manage, search, edit, and organize ${branch} question papers`;
+        } else if (tabName === "upload") {
+            document.getElementById("currentTabTitle").textContent = `Publish ${branch} Question Paper`;
+            document.getElementById("currentTabSubtitle").textContent = `Upload verified examination PDF documents for ${branch}`;
+        } else if (tabName === "departments") {
+            document.getElementById("currentTabTitle").textContent = `${branch} Department Profile`;
+            document.getElementById("currentTabSubtitle").textContent = `Academic structure and examination metrics for ${branch}`;
+        } else if (tabName === "subjects") {
+            document.getElementById("currentTabTitle").textContent = `${branch} Subjects Directory`;
+            document.getElementById("currentTabSubtitle").textContent = `Active course codes and syllabus catalog for ${branch}`;
+        } else if (tabName === "requests") {
+            document.getElementById("currentTabTitle").textContent = `${branch} Student Demands`;
+            document.getElementById("currentTabSubtitle").textContent = `Past examination papers requested by students for ${branch}`;
+        } else if (tabName === "submissions") {
+            document.getElementById("currentTabTitle").textContent = `${branch} Student Contributions`;
+            document.getElementById("currentTabSubtitle").textContent = `Review and approve contributed question papers for ${branch}`;
+        } else if (tabName === "logs") {
+            document.getElementById("currentTabTitle").textContent = `${branch} Activity Audit Logs`;
+            document.getElementById("currentTabSubtitle").textContent = `Security audit logs for administrative actions in ${branch}`;
+        } else {
+            const meta = TAB_TITLES[tabName] || { title: "Admin Portal", subtitle: "MCE PYQ Hub" };
+            document.getElementById("currentTabTitle").textContent = meta.title;
+            document.getElementById("currentTabSubtitle").textContent = meta.subtitle;
+        }
+    } else {
+        const meta = TAB_TITLES[tabName] || { title: "Admin Portal", subtitle: "MCE PYQ Hub" };
+        document.getElementById("currentTabTitle").textContent = meta.title;
+        document.getElementById("currentTabSubtitle").textContent = meta.subtitle;
+    }
 
     // Trigger tab-specific refresh if needed
     if (tabName === "logs") loadActivityLogs();
@@ -246,7 +315,14 @@ async function loadDashboardStats() {
         const stats = await res.json();
         
         document.getElementById("overviewTotalPapers").textContent = Number(stats.total_papers || 0).toLocaleString();
-        document.getElementById("overviewBranches").textContent = stats.active_branches || 8;
+        if (currentAdminUser && currentAdminUser.branch) {
+            const lbl = document.getElementById("overviewBranchesLabel");
+            if (lbl) lbl.textContent = "Assigned Department";
+            const val = document.getElementById("overviewBranches");
+            if (val) val.textContent = currentAdminUser.branch;
+        } else {
+            document.getElementById("overviewBranches").textContent = stats.active_branches || 8;
+        }
         document.getElementById("overviewSubjects").textContent = stats.total_subjects || 0;
         document.getElementById("overviewRequests").textContent = stats.student_requests || 0;
         document.getElementById("sidebarPapersBadge").textContent = stats.total_papers || 0;
@@ -862,8 +938,10 @@ function openEditModal(encodedPaper) {
     const paper = JSON.parse(decodeURIComponent(encodedPaper));
     document.getElementById("editPaperId").value = paper.id;
     const branchInput = document.getElementById("editPaperBranch");
-    branchInput.value = (currentAdminUser && currentAdminUser.branch) ? currentAdminUser.branch : paper.branch;
-    if (currentAdminUser && currentAdminUser.branch) {
+    const activeBranch = (currentAdminUser && currentAdminUser.branch) ? currentAdminUser.branch : paper.branch;
+    if (branchInput) {
+        branchInput.innerHTML = `<option value="${escapeHtml(activeBranch)}" selected>${escapeHtml(activeBranch)}</option>`;
+        branchInput.value = activeBranch;
         branchInput.style.pointerEvents = "none";
     }
     document.getElementById("editTitle").value = paper.title || "";
@@ -1001,9 +1079,11 @@ async function executeBatchDelete() {
 }
 
 async function promptClearEntireRepo() {
-    const isConfirmed = window.confirm(
-        "⚠️ PERMANENT REPOSITORY PURGE\n\nAre you completely sure you want to delete ALL question papers from the repository?\n\nThis will permanently remove all papers and reset the library to 0. Auto-seeding is permanently disabled, so dummy papers will NEVER return."
-    );
+    const branch = (currentAdminUser && currentAdminUser.branch) ? currentAdminUser.branch : "";
+    const promptMsg = branch
+        ? `⚠️ PERMANENT ${branch.toUpperCase()} REPOSITORY PURGE\n\nAre you completely sure you want to delete ALL question papers in ${branch}?\n\nThis will permanently remove all papers for ${branch}. Papers in other departments will not be affected.`
+        : "⚠️ PERMANENT REPOSITORY PURGE\n\nAre you completely sure you want to delete ALL question papers from the repository?\n\nThis will permanently remove all papers and reset the library to 0.";
+    const isConfirmed = window.confirm(promptMsg);
     if (!isConfirmed) return;
 
     try {
