@@ -729,63 +729,69 @@ function applyAdminStudentViewUI(adminBranch) {
         return b.trim();
     })(adminBranch);
 
-    // 1. Insert Department Admin top banner if not already present
+    // 1. Insert Department Admin top banner if not already present from server
     if (!document.getElementById("adminSvBanner")) {
         const banner = document.createElement("div");
         banner.id = "adminSvBanner";
         banner.className = "admin-sv-top-banner";
         banner.innerHTML = `
             <div class="admin-sv-left">
-                <span class="admin-sv-pill">🛡️ ${escapeHtml(adminBranch)} Admin</span>
+                <span class="admin-sv-pill">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    <span>${escapeHtml(adminBranch)} Admin</span>
+                </span>
                 <span class="admin-sv-text">Department Student View Scoped to <strong>${escapeHtml(adminBranch)}</strong></span>
-                <span class="admin-sv-badge-isolated">Other Branches Restricted</span>
+                <span class="admin-sv-badge-isolated">
+                    <span class="dot"></span>
+                    <span>Other Branches Restricted</span>
+                </span>
             </div>
             <div class="admin-sv-right">
                 <a href="/admin/dashboard" class="btn-sv-back-dashboard">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="15 18 9 12 15 6"></polyline>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
                     </svg>
                     <span>Back to ${escapeHtml(adminBranch)} Admin Dashboard</span>
                 </a>
-                <a href="/admin/dashboard" class="btn-sv-exit" title="Exit Student View">Exit Student View</a>
             </div>
         `;
         document.body.insertAdjacentElement("afterbegin", banner);
     }
 
-    // 2. Adjust navigation bar: replace "Branches" tab with admin's assigned branch only
+    // 2. Adjust navigation bar: hide Home and Semester, show only assigned branch
     document.querySelectorAll(".home-navigation a").forEach(a => {
         const text = a.textContent.trim().toLowerCase();
         const href = (a.getAttribute("href") || "").toLowerCase();
-        if (text === "branches" || href.includes("branches")) {
-            // Replace generic "Branches" with the specific department
+        if (text === "home" || href === "index.html" || href === "/") {
+            a.style.display = "none";
+        } else if (text === "semester" || href.includes("#search") || href.includes("#semester")) {
+            a.style.display = "none";
+        } else if (text === "branches" || href.includes("branches")) {
             a.textContent = `${adminBranch}`;
-            a.setAttribute("href", "#");
+            a.setAttribute("href", "javascript:void(0)");
             a.title = `${adminBranch} Department (Admin Isolated)`;
             a.classList.add("active");
-            a.addEventListener("click", (e) => {
-                e.preventDefault();
-                resetFilters();
-            });
-        } else if (text === "home" || href === "index.html" || href === "/") {
-            // Lock "Home" to current branch student page
-            a.setAttribute("href", "#");
-            a.title = `${adminBranch} Home`;
-            a.addEventListener("click", (e) => {
-                e.preventDefault();
-                resetFilters();
-            });
+            a.classList.add("admin-branch-locked-nav");
+            a.style.pointerEvents = "none";
         }
     });
 
-    // 3. Adjust breadcrumbs: remove multi-branch links and show Department Portal / <Branch> Student View
+    // 3. Adjust breadcrumbs: scope to current department only
     const breadcrumbContainer = document.querySelector(".branch-breadcrumbs");
     if (breadcrumbContainer) {
         breadcrumbContainer.innerHTML = `
-            <span style="color: #64748b; font-weight: 500;">Department Portal</span>
-            <span style="margin: 0 6px; color: #94a3b8;">/</span>
-            <strong style="color: #0284c7;">${escapeHtml(adminBranch)} Student View</strong>
+            <span>MCE PYQ Hub</span> &nbsp;/&nbsp; <strong style="color: #38bdf8;">${escapeHtml(adminBranch)} Department (Admin Student View)</strong>
         `;
+    }
+
+    // 4. Lock brand header link from navigating back to index.html
+    const brandLink = document.querySelector(".home-brand a, a.home-brand");
+    if (brandLink) {
+        brandLink.setAttribute("href", "javascript:void(0)");
+        brandLink.style.cursor = "default";
     }
 
     // 4. In Request PYQ and Submit PYQ modals, isolate branch dropdown to admin's branch ONLY

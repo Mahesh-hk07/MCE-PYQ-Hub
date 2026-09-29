@@ -4,6 +4,7 @@ from urllib.parse import parse_qs, urlparse, unquote
 from email.parser import BytesParser
 from email.policy import default
 from http.cookies import SimpleCookie
+import html
 import json
 import re
 import secrets
@@ -86,6 +87,210 @@ def get_admin_assigned_page(admin_branch: str) -> str:
     """Return the designated student view page for an admin's branch."""
     canonical = normalize_branch(admin_branch)
     return BRANCH_STUDENT_PAGES.get(canonical, "/ece.html")
+
+
+def build_admin_student_view_html(raw_html: str, admin_branch: str) -> str:
+    """Transform branch HTML template into a strict, secure Department Admin Student View.
+    - Hides Home button and Semester button for the admin
+    - Replaces Branches button with the active Department Admin branch pill only
+    - Injects professional executive-grade Admin Student View top banner with 'Back to Admin Dashboard' button
+    - Injects standalone inline CSS to guarantee 100% styling even with stale browser/SW caches
+    - Adjusts breadcrumbs to scoped department
+    - Public student views (/ece.html, /cse.html, etc.) never call this function.
+    """
+    content = raw_html
+    safe_branch = html.escape(admin_branch)
+
+    # 1. Base href for asset resolution
+    if "<base href=" not in content:
+        content = content.replace("<head>", '<head>\n    <base href="/">', 1)
+
+    # 2. Executive-grade Inline CSS
+    admin_styles = f"""
+    <style id="adminSvInlineStyles">
+    .admin-sv-top-banner {{
+        background: linear-gradient(135deg, #09172e 0%, #0d284f 50%, #0e306a 100%);
+        color: #ffffff;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        border-bottom: 1.5px solid rgba(56, 189, 248, 0.35);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+        position: sticky;
+        top: 0;
+        z-index: 100000;
+        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }}
+    .admin-sv-left {{
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }}
+    .admin-sv-pill {{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(14, 165, 233, 0.15);
+        border: 1px solid rgba(56, 189, 248, 0.45);
+        color: #38bdf8;
+        font-weight: 700;
+        font-size: 11.5px;
+        padding: 4px 12px;
+        border-radius: 999px;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }}
+    .admin-sv-text {{
+        color: #cbd5e1;
+        font-size: 13px;
+        font-weight: 500;
+    }}
+    .admin-sv-text strong {{
+        color: #ffffff;
+        font-weight: 700;
+    }}
+    .admin-sv-badge-isolated {{
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(16, 185, 129, 0.16);
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        color: #6ee7b7;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 3px 10px;
+        border-radius: 999px;
+    }}
+    .admin-sv-badge-isolated .dot {{
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 6px #34d399;
+        display: inline-block;
+    }}
+    .admin-sv-right {{
+        display: flex;
+        align-items: center;
+    }}
+    .btn-sv-back-dashboard {{
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff !important;
+        text-decoration: none !important;
+        font-weight: 700;
+        font-size: 13px;
+        padding: 8px 18px;
+        border-radius: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }}
+    .btn-sv-back-dashboard:hover {{
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        color: #ffffff !important;
+    }}
+    .btn-sv-back-dashboard svg {{
+        transition: transform 0.2s ease;
+    }}
+    .btn-sv-back-dashboard:hover svg {{
+        transform: translateX(-3px);
+    }}
+    .admin-branch-locked-nav {{
+        color: #38bdf8 !important;
+        font-weight: 700 !important;
+        border-bottom: 2px solid #38bdf8 !important;
+        cursor: default !important;
+        pointer-events: none !important;
+    }}
+    @media (max-width: 768px) {{
+        .admin-sv-top-banner {{
+            flex-direction: column;
+            align-items: stretch;
+            text-align: center;
+            padding: 10px 16px;
+        }}
+        .admin-sv-left {{
+            justify-content: center;
+        }}
+        .admin-sv-right {{
+            justify-content: center;
+        }}
+        .btn-sv-back-dashboard {{
+            width: 100%;
+            justify-content: center;
+        }}
+    }}
+    </style>
+    """
+    content = content.replace("</head>", f"{admin_styles}\n</head>", 1)
+
+    # 3. Top Banner HTML
+    banner_html = f"""
+    <div id="adminSvBanner" class="admin-sv-top-banner">
+        <div class="admin-sv-left">
+            <span class="admin-sv-pill">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>{safe_branch} Admin</span>
+            </span>
+            <span class="admin-sv-text">Department Student View Scoped to <strong>{safe_branch}</strong></span>
+            <span class="admin-sv-badge-isolated">
+                <span class="dot"></span>
+                <span>Other Branches Restricted</span>
+            </span>
+        </div>
+        <div class="admin-sv-right">
+            <a href="/admin/dashboard" class="btn-sv-back-dashboard">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Back to {safe_branch} Admin Dashboard</span>
+            </a>
+        </div>
+    </div>
+    """
+    if "<body" in content:
+        content = re.sub(r'(<body[^>]*>)', r'\1\n' + banner_html, content, count=1)
+
+    # 4. Navigation bar transformation:
+    # - Hide Home button
+    # - Hide Semester button
+    # - Replace Branches button with active Department Admin branch pill only
+    def replace_nav(match):
+        nav_html = match.group(0)
+        nav_html = re.sub(r'<a\s+[^>]*href=["\'][^"\']*index\.html["\'][^>]*>\s*Home\s*</a>\s*', '', nav_html, flags=re.IGNORECASE)
+        nav_html = re.sub(r'<a\s+[^>]*href=["\'][^"\']*#(?:search|semester)["\'][^>]*>\s*Semester\s*</a>\s*', '', nav_html, flags=re.IGNORECASE)
+        replacement = f'<a href="javascript:void(0)" class="active admin-branch-locked-nav">{safe_branch}</a>'
+        nav_html = re.sub(r'<a\s+[^>]*href=["\'][^"\']*#branches["\'][^>]*>\s*Branches\s*</a>', replacement, nav_html, flags=re.IGNORECASE)
+        return nav_html
+
+    content = re.sub(r'<nav\s+class=["\']home-navigation["\'].*?</nav>', replace_nav, content, flags=re.DOTALL)
+
+    # 5. Breadcrumbs transformation
+    def replace_breadcrumbs(match):
+        return f'<div class="branch-breadcrumbs"><span>MCE PYQ Hub</span> &nbsp;/&nbsp; <strong style="color: #38bdf8;">{safe_branch} Department (Admin Student View)</strong></div>'
+    content = re.sub(r'<div\s+class=["\']branch-breadcrumbs["\'].*?</div>', replace_breadcrumbs, content, flags=re.DOTALL)
+
+    # 6. Logo link: prevent clicking brand from navigating to index.html in admin student view
+    content = re.sub(r'<a\s+[^>]*href=["\']index\.html["\']([^>]*)class=["\']home-brand["\']', r'<div \1class="home-brand"', content, flags=re.IGNORECASE)
+
+    # 7. Ensure fresh client scripts and stylesheets are requested
+    content = content.replace("branch.js?v=10.0", "branch.js?v=11.0")
+    content = content.replace("style.css?v=19.0", "style.css?v=20.0")
+
+    return content
 
 
 # Active admin sessions: session_token -> user_dict
@@ -781,13 +986,10 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 self.send_error(404, "Student View Template Not Found")
                 return
 
-            content = file_path.read_text(encoding="utf-8")
+            raw_content = file_path.read_text(encoding="utf-8")
+            transformed_content = build_admin_student_view_html(raw_content, admin_branch)
 
-            # Ensure <base href="/"> is present so all relative assets (CSS, JS, images) resolve correctly from root
-            if "<base href=" not in content:
-                content = content.replace("<head>", '<head>\n    <base href="/">', 1)
-
-            payload = content.encode("utf-8")
+            payload = transformed_content.encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
             self.send_header("Content-Length", str(len(payload)))
