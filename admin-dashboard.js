@@ -40,8 +40,99 @@ async function verifyAdminSession() {
         const email = currentAdminUser.email || "admin@mce.ac.in";
         document.getElementById("adminUserEmail").textContent = email;
         document.getElementById("adminUserAvatar").textContent = email.charAt(0).toUpperCase();
+
+        if (currentAdminUser.branch) {
+            applyBranchRestrictions(currentAdminUser.branch);
+        }
     } catch (e) {
         window.location.replace("/admin/login");
+    }
+}
+
+function applyBranchRestrictions(branch) {
+    if (!branch) return;
+
+    // 1. Update Badge
+    const badge = document.getElementById("adminBranchBadge");
+    if (badge) {
+        badge.textContent = `${branch} Admin`;
+        badge.style.fontWeight = "600";
+        badge.style.color = "#38bdf8";
+    }
+
+    // 2. Set Student View Link to assigned department page
+    const studentViewLink = document.getElementById("topbarStudentViewLink");
+    const branchMap = {
+        "ECE": "/ece.html",
+        "CSE": "/cse.html",
+        "CSE(AI&ML)": "/cse-aiml.html",
+        "Mechanical": "/mechanical.html",
+        "Civil": "/civil.html",
+        "First Year": "/first-year.html"
+    };
+    if (studentViewLink && branchMap[branch]) {
+        studentViewLink.href = branchMap[branch];
+        studentViewLink.setAttribute("title", `Open ${branch} Student View`);
+    }
+
+    // 3. Lock Upload form branch to assigned department
+    const uploadBranchSelect = document.getElementById("uploadBranch");
+    if (uploadBranchSelect) {
+        uploadBranchSelect.value = branch;
+        Array.from(uploadBranchSelect.options).forEach(opt => {
+            if (opt.value !== branch) {
+                opt.disabled = true;
+                opt.style.display = "none";
+            }
+        });
+        uploadBranchSelect.style.pointerEvents = "none";
+        uploadBranchSelect.style.backgroundColor = "var(--admin-card-bg)";
+
+        const semesterSelect = document.getElementById("uploadSemester");
+        if (semesterSelect) {
+            semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+            const sems = (branch === "First Year")
+                ? ["1st Semester", "2nd Semester"]
+                : ["3rd Semester", "4th Semester", "5th Semester", "6th Semester", "7th Semester", "8th Semester"];
+            sems.forEach(s => {
+                const opt = document.createElement("option");
+                opt.value = s;
+                opt.textContent = s;
+                semesterSelect.appendChild(opt);
+            });
+        }
+    }
+
+    // 4. Lock Repository Filter to assigned department
+    const filterBranchSelect = document.getElementById("filterBranchSelect");
+    if (filterBranchSelect) {
+        filterBranchSelect.value = branch;
+        Array.from(filterBranchSelect.options).forEach(opt => {
+            if (opt.value !== branch) {
+                opt.disabled = true;
+                opt.style.display = "none";
+            }
+        });
+        filterBranchSelect.style.pointerEvents = "none";
+    }
+
+    // 5. Hide other branch pills
+    const pills = document.querySelectorAll(".btn-branch-pill");
+    pills.forEach(p => {
+        const pBranch = p.getAttribute("data-branch");
+        if (pBranch === branch) {
+            p.classList.add("active");
+            p.style.display = "inline-flex";
+        } else {
+            p.classList.remove("active");
+            p.style.display = "none";
+        }
+    });
+
+    // 6. Hide "Manage Admins" tab in sidebar (strictly Department Admins)
+    const userTabLink = document.querySelector('.sidebar-link[data-tab="users"]');
+    if (userTabLink) {
+        userTabLink.style.display = "none";
     }
 }
 
@@ -429,7 +520,11 @@ const DEPT_DEFINITIONS = [
 
 function renderDepartmentsGrid() {
     const grid = document.getElementById("departmentsGrid");
-    grid.innerHTML = DEPT_DEFINITIONS.map(dept => {
+    const deptsToShow = (currentAdminUser && currentAdminUser.branch)
+        ? DEPT_DEFINITIONS.filter(d => d.code.toLowerCase() === currentAdminUser.branch.toLowerCase())
+        : DEPT_DEFINITIONS;
+
+    grid.innerHTML = deptsToShow.map(dept => {
         const deptPapers = allPapers.filter(p => p.branch === dept.code);
         const uniqueSubjects = new Set(deptPapers.map(p => (p.subject || "").trim().toLowerCase())).size;
         return `
@@ -643,6 +738,9 @@ function setupDropzone() {
         }
 
         const formData = new FormData(form);
+        if (currentAdminUser && currentAdminUser.branch) {
+            formData.set("branch", currentAdminUser.branch);
+        }
         submitBtn.disabled = true;
         submitBtn.innerHTML = `
             <svg class="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"></path></svg>
@@ -663,7 +761,11 @@ function setupDropzone() {
                 form.reset();
                 selectedText.style.display = "none";
                 if (cieGroup) cieGroup.style.display = "none";
-                updateUploadSemesters();
+                if (currentAdminUser && currentAdminUser.branch) {
+                    applyBranchRestrictions(currentAdminUser.branch);
+                } else {
+                    updateUploadSemesters();
+                }
                 await refreshAllData();
             } else {
                 alertBanner.className = "admin-alert-banner admin-alert-danger";
@@ -759,7 +861,11 @@ function closeModal(modalId) {
 function openEditModal(encodedPaper) {
     const paper = JSON.parse(decodeURIComponent(encodedPaper));
     document.getElementById("editPaperId").value = paper.id;
-    document.getElementById("editPaperBranch").value = paper.branch;
+    const branchInput = document.getElementById("editPaperBranch");
+    branchInput.value = (currentAdminUser && currentAdminUser.branch) ? currentAdminUser.branch : paper.branch;
+    if (currentAdminUser && currentAdminUser.branch) {
+        branchInput.style.pointerEvents = "none";
+    }
     document.getElementById("editTitle").value = paper.title || "";
     document.getElementById("editSubject").value = paper.subject || "";
     document.getElementById("editSubjectCode").value = paper.subject_code || "";

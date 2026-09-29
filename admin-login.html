@@ -141,6 +141,28 @@
                     </div>
                 </div>
 
+                <!-- Department Selection (Required) -->
+                <div class="admin-form-group">
+                    <label for="adminDepartment">DEPARTMENT</label>
+                    <div class="admin-input-wrapper">
+                        <span class="input-icon-left">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </span>
+                        <select id="adminDepartment" name="department" class="admin-form-control" style="width: 100%; height: 44px; padding-left: 40px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;" required>
+                            <option value="" disabled selected>-- Select Your Department --</option>
+                            <option value="ECE">Electronics &amp; Communication (ECE)</option>
+                            <option value="CSE">Computer Science &amp; Engineering (CSE)</option>
+                            <option value="CSE(AI&ML)">AI &amp; Machine Learning (CSE-AIML)</option>
+                            <option value="Mechanical">Mechanical Engineering</option>
+                            <option value="Civil">Civil Engineering</option>
+                            <option value="First Year">First Year (Physics &amp; Chemistry Cycle)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Password input with lock icon -->
                 <div class="admin-form-group">
                     <label for="adminPassword">ADMIN PASSWORD</label>
@@ -255,6 +277,12 @@
 
                 const password = passwordInput.value;
                 const email = document.getElementById('adminEmail').value.trim() || 'admin@mce.ac.in';
+                const department = document.getElementById('adminDepartment').value;
+
+                if (!department) {
+                    showAlert('Please select your department.');
+                    return;
+                }
 
                 if (!password) {
                     showAlert('Please enter your administrator password.');
@@ -275,6 +303,7 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
+                            department: department,
                             email: email,
                             username: email,
                             password: password

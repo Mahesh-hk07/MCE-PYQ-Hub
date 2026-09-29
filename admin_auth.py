@@ -45,7 +45,7 @@ def verify_password(password: str, stored_hash: str) -> bool:
 
 
 def init_admin_db():
-    """Initialize users and activity logs tables in users.db and seed master admin."""
+    """Initialize users and activity logs tables in users.db and seed department admins."""
     DATABASE_DIR.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(USERS_DB) as conn:
         conn.execute(
@@ -56,6 +56,7 @@ def init_admin_db():
                 email TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
                 role TEXT NOT NULL DEFAULT 'admin',
+                branch TEXT DEFAULT '',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
             """
@@ -73,51 +74,151 @@ def init_admin_db():
             """
         )
 
-        # Check if default admin exists
         cursor = conn.cursor()
-        existing = cursor.execute(
-            "SELECT id FROM users WHERE email = 'admin@mce.ac.in' OR email = 'admin' LIMIT 1"
-        ).fetchone()
-
-        if not existing:
-            default_pw = "MCEAdmin2026!"
-            hashed = hash_password(default_pw)
-            cursor.execute(
-                """
-                INSERT INTO users (name, email, password_hash, role)
-                VALUES ('Library Administrator', 'admin@mce.ac.in', ?, 'admin')
-                """,
-                (hashed,)
-            )
+        cursor.execute("PRAGMA table_info(users)")
+        columns = [col[1] for col in cursor.fetchall()]
+        if "branch" not in columns:
+            cursor.execute("ALTER TABLE users ADD COLUMN branch TEXT DEFAULT ''")
             conn.commit()
 
+        # Seed the 6 Department Admins
+        default_pw = "MCEAdmin2026!"
+        password_file = ROOT / ".admin_password"
+        if password_file.exists():
+            try:
+                pw_content = password_file.read_text(encoding="utf-8").strip()
+                if pw_content:
+                    default_pw = pw_content
+            except Exception:
+                pass
 
-def authenticate_user(email_or_username: str, password: str):
-    """Authenticate admin user and return user record if valid, else None."""
+        hashed_pw = hash_password(default_pw)
+
+        department_admins = [
+            ("ECE Department Admin", "ece_admin@mce.ac.in", "ECE"),
+            ("CSE Department Admin", "cse_admin@mce.ac.in", "CSE"),
+            ("AI & ML Department Admin", "aiml_admin@mce.ac.in", "CSE(AI&ML)"),
+            ("Mechanical Department Admin", "mech_admin@mce.ac.in", "Mechanical"),
+            ("Civil Department Admin", "civil_admin@mce.ac.in", "Civil"),
+            ("First Year Department Admin", "firstyear_admin@mce.ac.in", "First Year"),
+        ]
+
+        for name, email, branch in department_admins:
+            existing = cursor.execute("SELECT id FROM users WHERE email = ? LIMIT 1", (email,)).fetchone()
+            if not existing:
+                cursor.execute(
+                    """
+                    INSERT INTO users (name, email, password_hash, role, branch)
+                    VALUES (?, ?, ?, 'admin', ?)
+                    """,
+                    (name, email, hashed_pw, branch)
+                )
+            else:
+                cursor.execute(
+                    "UPDATE users SET branch = ? WHERE email = ?",
+                    (branch, email)
+                )
+        conn.commit()
+
+
+DEPARTMENT_SHORTCUTS = {
+    "ece": "ECE",
+    "ece_admin": "ECE",
+    "ece@mce.ac.in": "ECE",
+    "cse": "CSE",
+    "cse_admin": "CSE",
+    "cse@mce.ac.in": "CSE",
+    "aiml": "CSE(AI&ML)",
+    "ai_ml": "CSE(AI&ML)",
+    "ai & ml": "CSE(AI&ML)",
+    "aiml_admin": "CSE(AI&ML)",
+    "aiml@mce.ac.in": "CSE(AI&ML)",
+    "mech": "Mechanical",
+    "mechanical": "Mechanical",
+    "mech_admin": "Mechanical",
+    "mech@mce.ac.in": "Mechanical",
+    "civil": "Civil",
+    "civil_admin": "Civil",
+    "civil@mce.ac.in": "Civil",
+    "firstyear": "First Year",
+    "first_year": "First Year",
+    "first year": "First Year",
+    "firstyear_admin": "First Year",
+    "1styear": "First Year",
+    "firstyear@mce.ac.in": "First Year",
+}
+
+
+def authenticate_user(email_or_username: str, password: str, department: str = None):
+    """Authenticate department admin and return user record with assigned branch if valid, else None."""
     identifier = (email_or_username or "").strip().lower()
-    if not identifier or not password:
+    if not password:
         return None
+
+    # Canonical branch map
+    branch_map = {
+        "ece": "ECE",
+        "cse": "CSE",
+        "ai & ml": "CSE(AI&ML)",
+        "ai&ml": "CSE(AI&ML)",
+        "cse(ai&ml)": "CSE(AI&ML)",
+        "aiml": "CSE(AI&ML)",
+        "mechanical": "Mechanical",
+        "civil": "Civil",
+        "first year": "First Year"
+    }
+
+    target_branch = None
+    if department:
+        target_branch = branch_map.get(str(department).strip().lower(), str(department).strip())
 
     with sqlite3.connect(USERS_DB) as conn:
         conn.row_factory = sqlite3.Row
-        # Allow login via full email or username 'admin'
-        if identifier in ["admin", "administrator"]:
+        user = None
+
+        # 1. If explicit department selected, find that department admin
+        if target_branch:
             user = conn.execute(
-                "SELECT * FROM users WHERE email = 'admin@mce.ac.in' OR email = 'admin' LIMIT 1"
+                "SELECT * FROM users WHERE branch = ? OR branch = ? LIMIT 1",
+                (target_branch, department)
             ).fetchone()
-        else:
+
+        # 2. Look up by shortcut username if user not yet found
+        if not user and identifier in DEPARTMENT_SHORTCUTS:
+            sc_branch = DEPARTMENT_SHORTCUTS[identifier]
             user = conn.execute(
-                "SELECT * FROM users WHERE LOWER(email) = ? LIMIT 1",
-                (identifier,)
+                "SELECT * FROM users WHERE branch = ? LIMIT 1",
+                (sc_branch,)
+            ).fetchone()
+
+        # 3. Look up by direct email or name
+        if not user and identifier:
+            user = conn.execute(
+                "SELECT * FROM users WHERE LOWER(email) = ? OR LOWER(name) = ? LIMIT 1",
+                (identifier, identifier)
+            ).fetchone()
+
+        # 4. Fallback: if username is 'admin' and target_branch is specified, get that department's admin
+        if not user and identifier in ["admin", "administrator", "admin@mce.ac.in"] and target_branch:
+            user = conn.execute(
+                "SELECT * FROM users WHERE branch = ? LIMIT 1",
+                (target_branch,)
             ).fetchone()
 
         if user and verify_password(password, user["password_hash"]):
+            user_branch = user["branch"] or target_branch or ""
+            if target_branch and user["branch"] and user["branch"].strip().lower() != target_branch.strip().lower():
+                return None
+            if not user_branch:
+                return None
             return {
                 "id": user["id"],
                 "name": user["name"],
                 "email": user["email"],
-                "role": user["role"]
+                "role": user["role"],
+                "branch": user_branch
             }
+
     return None
 
 
@@ -126,12 +227,12 @@ def list_admin_users():
     with sqlite3.connect(USERS_DB) as conn:
         conn.row_factory = sqlite3.Row
         rows = conn.execute(
-            "SELECT id, name, email, role, created_at FROM users ORDER BY id ASC"
+            "SELECT id, name, email, role, branch, created_at FROM users ORDER BY id ASC"
         ).fetchall()
         return [dict(r) for r in rows]
 
 
-def create_admin_user(name: str, email: str, password: str, role: str = "admin"):
+def create_admin_user(name: str, email: str, password: str, role: str = "admin", branch: str = ""):
     """Create a new administrator account."""
     name = (name or "").strip()
     email = (email or "").strip().lower()
@@ -143,10 +244,10 @@ def create_admin_user(name: str, email: str, password: str, role: str = "admin")
         cursor = conn.cursor()
         cursor.execute(
             """
-            INSERT INTO users (name, email, password_hash, role)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO users (name, email, password_hash, role, branch)
+            VALUES (?, ?, ?, ?, ?)
             """,
-            (name, email, hashed, role)
+            (name, email, hashed, role, branch)
         )
         return cursor.lastrowid
 
