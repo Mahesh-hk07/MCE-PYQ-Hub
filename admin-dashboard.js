@@ -70,19 +70,11 @@ function applyBranchRestrictions(branch) {
         deptLinkText.textContent = `${branch} Department`;
     }
 
-    // 2. Set Student View Link to assigned department page
+    // 2. Set Student View Link to assigned department Admin Student View route
     const studentViewLink = document.getElementById("topbarStudentViewLink");
-    const branchMap = {
-        "ECE": "/ece.html",
-        "CSE": "/cse.html",
-        "CSE(AI&ML)": "/cse-aiml.html",
-        "Mechanical": "/mechanical.html",
-        "Civil": "/civil.html",
-        "First Year": "/first-year.html"
-    };
-    if (studentViewLink && branchMap[branch]) {
-        studentViewLink.href = branchMap[branch];
-        studentViewLink.setAttribute("title", `Open ${branch} Student View`);
+    if (studentViewLink && branch) {
+        studentViewLink.href = `/admin/student-view?branch=${encodeURIComponent(branch)}`;
+        studentViewLink.setAttribute("title", `Open ${branch} Admin Student View`);
         const span = studentViewLink.querySelector("span");
         if (span) span.textContent = `${branch} Student View`;
     }

@@ -691,3 +691,143 @@ if (paperSearch) {
 
 loadSemesterOptions();
 loadBranchPapers();
+
+// =========================================
+// DEPARTMENT ADMIN STUDENT VIEW INTEGRATION
+// =========================================
+async function initAdminStudentMode() {
+    // Only apply when inside the dedicated Admin Student View (/admin/student-view)
+    // This guarantees normal public student pages (/ece.html, /cse.html) remain 100% untouched
+    const isAdminStudentView = window.location.pathname === "/admin/student-view" || 
+                               window.location.pathname.startsWith("/admin/student-view");
+    if (!isAdminStudentView) {
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/admin/status");
+        if (!response.ok) return;
+        const data = await response.json();
+        if (data.is_admin && data.user && data.user.branch) {
+            applyAdminStudentViewUI(data.user.branch);
+        }
+    } catch (e) {
+        // Normal student or offline
+    }
+}
+
+function applyAdminStudentViewUI(adminBranch) {
+    const canonicalBranch = (function(b) {
+        if (!b) return "";
+        const s = b.trim().toLowerCase();
+        if (s.includes("ai") || s.includes("aiml")) return "CSE(AI&ML)";
+        if (s.includes("ece") || s.includes("electronics")) return "ECE";
+        if (s.includes("cse") || s.includes("computer")) return "CSE";
+        if (s.includes("mech")) return "Mechanical";
+        if (s.includes("civil")) return "Civil";
+        if (s.includes("first") || s.includes("1st")) return "First Year";
+        return b.trim();
+    })(adminBranch);
+
+    // 1. Insert Department Admin top banner if not already present
+    if (!document.getElementById("adminSvBanner")) {
+        const banner = document.createElement("div");
+        banner.id = "adminSvBanner";
+        banner.className = "admin-sv-top-banner";
+        banner.innerHTML = `
+            <div class="admin-sv-left">
+                <span class="admin-sv-pill">🛡️ ${escapeHtml(adminBranch)} Admin</span>
+                <span class="admin-sv-text">Department Student View Scoped to <strong>${escapeHtml(adminBranch)}</strong></span>
+                <span class="admin-sv-badge-isolated">Other Branches Restricted</span>
+            </div>
+            <div class="admin-sv-right">
+                <a href="/admin/dashboard" class="btn-sv-back-dashboard">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    <span>Back to ${escapeHtml(adminBranch)} Admin Dashboard</span>
+                </a>
+                <a href="/admin/dashboard" class="btn-sv-exit" title="Exit Student View">Exit Student View</a>
+            </div>
+        `;
+        document.body.insertAdjacentElement("afterbegin", banner);
+    }
+
+    // 2. Adjust navigation bar: replace "Branches" tab with admin's assigned branch only
+    document.querySelectorAll(".home-navigation a").forEach(a => {
+        const text = a.textContent.trim().toLowerCase();
+        const href = (a.getAttribute("href") || "").toLowerCase();
+        if (text === "branches" || href.includes("branches")) {
+            // Replace generic "Branches" with the specific department
+            a.textContent = `${adminBranch}`;
+            a.setAttribute("href", "#");
+            a.title = `${adminBranch} Department (Admin Isolated)`;
+            a.classList.add("active");
+            a.addEventListener("click", (e) => {
+                e.preventDefault();
+                resetFilters();
+            });
+        } else if (text === "home" || href === "index.html" || href === "/") {
+            // Lock "Home" to current branch student page
+            a.setAttribute("href", "#");
+            a.title = `${adminBranch} Home`;
+            a.addEventListener("click", (e) => {
+                e.preventDefault();
+                resetFilters();
+            });
+        }
+    });
+
+    // 3. Adjust breadcrumbs: remove multi-branch links and show Department Portal / <Branch> Student View
+    const breadcrumbContainer = document.querySelector(".branch-breadcrumbs");
+    if (breadcrumbContainer) {
+        breadcrumbContainer.innerHTML = `
+            <span style="color: #64748b; font-weight: 500;">Department Portal</span>
+            <span style="margin: 0 6px; color: #94a3b8;">/</span>
+            <strong style="color: #0284c7;">${escapeHtml(adminBranch)} Student View</strong>
+        `;
+    }
+
+    // 4. In Request PYQ and Submit PYQ modals, isolate branch dropdown to admin's branch ONLY
+    function lockBranchSelect(selectId) {
+        const sel = document.getElementById(selectId);
+        if (!sel) return;
+        Array.from(sel.options).forEach(opt => {
+            if (!opt.value) {
+                opt.remove();
+                return;
+            }
+            const optVal = opt.value.trim().toLowerCase();
+            const adminVal = adminBranch.trim().toLowerCase();
+            const matches = optVal === adminVal ||
+                (adminVal.includes("ece") && optVal === "ece") ||
+                (adminVal.includes("cse") && !adminVal.includes("ai") && optVal === "cse") ||
+                ((adminVal.includes("ai") || adminVal.includes("aiml")) && optVal.includes("ai")) ||
+                (adminVal.includes("mech") && optVal.includes("mech")) ||
+                (adminVal.includes("civil") && optVal.includes("civil")) ||
+                ((adminVal.includes("first") || adminVal.includes("1st")) && optVal.includes("first"));
+            if (!matches) {
+                opt.remove();
+            } else {
+                opt.selected = true;
+            }
+        });
+        sel.disabled = true;
+        let hiddenInput = document.getElementById(`${selectId}_hidden`);
+        if (!hiddenInput) {
+            hiddenInput = document.createElement("input");
+            hiddenInput.type = "hidden";
+            hiddenInput.id = `${selectId}_hidden`;
+            hiddenInput.name = sel.name;
+            hiddenInput.value = canonicalBranch;
+            sel.parentElement.appendChild(hiddenInput);
+        } else {
+            hiddenInput.value = canonicalBranch;
+        }
+    }
+
+    lockBranchSelect("reqBranch");
+    lockBranchSelect("contribBranch");
+}
+
+initAdminStudentMode();

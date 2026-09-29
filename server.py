@@ -59,6 +59,35 @@ def branches_match(b1: str, b2: str) -> bool:
     return normalize_branch(b1).lower() == normalize_branch(b2).lower()
 
 
+BRANCH_STUDENT_PAGES = {
+    "ECE": "/ece.html",
+    "CSE": "/cse.html",
+    "CSE(AI&ML)": "/cse-aiml.html",
+    "Mechanical": "/mechanical.html",
+    "Civil": "/civil.html",
+    "First Year": "/first-year.html",
+    "CSBS": "/csbs.html",
+    "EEE": "/eee.html",
+}
+
+STUDENT_BRANCH_PAGES = {
+    "/ece.html": "ECE",
+    "/cse.html": "CSE",
+    "/cse-aiml.html": "CSE(AI&ML)",
+    "/mechanical.html": "Mechanical",
+    "/civil.html": "Civil",
+    "/first-year.html": "First Year",
+    "/csbs.html": "CSBS",
+    "/eee.html": "EEE",
+}
+
+
+def get_admin_assigned_page(admin_branch: str) -> str:
+    """Return the designated student view page for an admin's branch."""
+    canonical = normalize_branch(admin_branch)
+    return BRANCH_STUDENT_PAGES.get(canonical, "/ece.html")
+
+
 # Active admin sessions: session_token -> user_dict
 ADMIN_SESSIONS = {}
 
@@ -668,6 +697,24 @@ class RequestHandler(SimpleHTTPRequestHandler):
         if path in ["/admin-dashboard.html", "/admin.html"] and not self.is_admin():
             self.redirect("/admin/login")
             return
+        if path == "/admin-login.html" and self.is_admin():
+            self.redirect("/admin/dashboard")
+            return
+        if path == "/admin/student-view":
+            if not self.is_admin():
+                self.redirect("/admin/login")
+                return
+            admin_user = self.get_current_user()
+            admin_branch = admin_user.get("branch", "") if admin_user else ""
+            query = parse_qs(request.query)
+            requested_branch = query.get("branch", [None])[0]
+            if not requested_branch:
+                requested_branch = admin_branch
+            if not branches_match(requested_branch, admin_branch):
+                self.send_error(403, f"Forbidden: You are the {admin_branch} Department Admin and cannot access {requested_branch} Student View.")
+                return
+            super().do_HEAD()
+            return
         if path.startswith("/papers/"):
             clean_rel = path.lstrip("/")
             local_file = ROOT / clean_rel
@@ -700,6 +747,66 @@ class RequestHandler(SimpleHTTPRequestHandler):
         if path == "/admin-login.html":
             if self.is_admin():
                 self.redirect("/admin/dashboard")
+                return
+            self.serve_html_file("admin-login.html")
+            return
+
+        # =========================================
+        # DEDICATED ADMIN STUDENT VIEW ROUTE
+        # =========================================
+        if path == "/admin/student-view":
+            if not self.is_admin():
+                self.redirect("/admin/login")
+                return
+
+            admin_user = self.get_current_user()
+            admin_branch = admin_user.get("branch", "") if admin_user else ""
+
+            query = parse_qs(request.query)
+            requested_branch = query.get("branch", [None])[0]
+            if not requested_branch:
+                requested_branch = admin_branch
+
+            # Strict Server-Side Branch Enforcement:
+            # If requested branch does not match authenticated admin's assigned branch -> 403 Forbidden
+            if not branches_match(requested_branch, admin_branch):
+                self.send_error(403, f"Forbidden: You are the {admin_branch} Department Admin and cannot access {requested_branch} Student View.")
+                return
+
+            # Resolve HTML template for the authorized branch
+            canonical = normalize_branch(admin_branch)
+            assigned_file = BRANCH_STUDENT_PAGES.get(canonical, "/ece.html").lstrip("/")
+            file_path = ROOT / assigned_file
+            if not file_path.exists():
+                self.send_error(404, "Student View Template Not Found")
+                return
+
+            content = file_path.read_text(encoding="utf-8")
+
+            # Ensure <base href="/"> is present so all relative assets (CSS, JS, images) resolve correctly from root
+            if "<base href=" not in content:
+                content = content.replace("<head>", '<head>\n    <base href="/">', 1)
+
+            payload = content.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(payload)))
+            self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+            self.end_headers()
+            self.wfile.write(payload)
+            return
+
+        # Serve admin.css with no-cache so UI updates are always instant
+        if path == "/admin.css":
+            css_file = ROOT / "admin.css"
+            if css_file.exists():
+                content = css_file.read_bytes()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/css; charset=utf-8")
+                self.send_header("Content-Length", str(len(content)))
+                self.send_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                self.end_headers()
+                self.wfile.write(content)
                 return
 
         # 3. Security Gatekeeper: Disable directory browsing

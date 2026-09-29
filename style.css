@@ -4247,3 +4247,139 @@ input {
 [data-theme="dark"] .academic-empty-title {
     color: #f1f5f9;
 }
+
+/* =========================================
+   ADMIN STUDENT VIEW BANNER & ISOLATION UI
+========================================= */
+.admin-sv-top-banner {
+    background: linear-gradient(135deg, #0b1f3d 0%, #1e3a8a 100%);
+    color: #ffffff;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 2px solid #3b82f6;
+    box-shadow: 0 4px 12px rgba(11, 31, 61, 0.25);
+    position: relative;
+    z-index: 101;
+    font-size: 13px;
+    animation: adminBannerSlideDown 0.3s ease-out;
+}
+
+@keyframes adminBannerSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-sv-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.admin-sv-pill {
+    background: rgba(59, 130, 246, 0.25);
+    border: 1px solid rgba(147, 197, 253, 0.4);
+    color: #93c5fd;
+    font-weight: 700;
+    font-size: 11.5px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+.admin-sv-text {
+    color: #e2e8f0;
+    font-weight: 500;
+}
+
+.admin-sv-text strong {
+    color: #60a5fa;
+    font-weight: 700;
+}
+
+.admin-sv-badge-isolated {
+    background: rgba(16, 185, 129, 0.18);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: #6ee7b7;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.admin-sv-right {
+    display: flex;
+    align-items: center;
+}
+
+.btn-sv-back-dashboard {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #2563eb;
+    color: #ffffff !important;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 12.5px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+    transition: all 0.2s ease;
+}
+
+.btn-sv-back-dashboard:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.45);
+}
+
+.btn-sv-exit {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0 !important;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-left: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-sv-exit:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff !important;
+}
+
+@media (max-width: 768px) {
+    .admin-sv-top-banner {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        padding: 10px 16px;
+    }
+    .admin-sv-left {
+        justify-content: center;
+    }
+    .admin-sv-right {
+        justify-content: center;
+    }
+    .btn-sv-back-dashboard {
+        width: 100%;
+        justify-content: center;
+    }
+}
