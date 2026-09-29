@@ -704,6 +704,20 @@ async function initAdminStudentMode() {
         return;
     }
 
+    // Global safety guard: prevent any link from accidentally navigating to public index.html while in Admin Student View
+    document.addEventListener("click", (e) => {
+        const link = e.target.closest("a");
+        if (!link) return;
+        const href = link.getAttribute("href") || "";
+        if (href.includes("index.html#contact") || href === "#contact") {
+            e.preventDefault();
+            const contactEl = document.getElementById("contact") || document.querySelector("footer");
+            if (contactEl) contactEl.scrollIntoView({ behavior: "smooth" });
+        } else if (href === "index.html" || href === "/" || href.includes("index.html#branches") || href.includes("index.html#search") || href.includes("index.html#semester")) {
+            e.preventDefault();
+        }
+    }, true);
+
     try {
         const response = await fetch("/api/admin/status");
         if (!response.ok) return;
@@ -776,10 +790,31 @@ function applyAdminStudentViewUI(adminBranch) {
             a.classList.add("active");
             a.classList.add("admin-branch-locked-nav");
             a.style.pointerEvents = "none";
+        } else if (text === "contact" || href.includes("contact")) {
+            a.setAttribute("href", "#contact");
+            a.addEventListener("click", (e) => {
+                e.preventDefault();
+                const contactEl = document.getElementById("contact") || document.querySelector("footer");
+                if (contactEl) {
+                    contactEl.scrollIntoView({ behavior: "smooth" });
+                }
+            });
         }
     });
 
-    // 3. Adjust breadcrumbs: scope to current department only
+    // 3. Rewire any other contact links across the page to stay on #contact
+    document.querySelectorAll('a[href*="index.html#contact"]').forEach(a => {
+        a.setAttribute("href", "#contact");
+        a.addEventListener("click", (e) => {
+            e.preventDefault();
+            const contactEl = document.getElementById("contact") || document.querySelector("footer");
+            if (contactEl) {
+                contactEl.scrollIntoView({ behavior: "smooth" });
+            }
+        });
+    });
+
+    // 4. Adjust breadcrumbs: scope to current department only
     const breadcrumbContainer = document.querySelector(".branch-breadcrumbs");
     if (breadcrumbContainer) {
         breadcrumbContainer.innerHTML = `
@@ -787,7 +822,7 @@ function applyAdminStudentViewUI(adminBranch) {
         `;
     }
 
-    // 4. Lock brand header link from navigating back to index.html
+    // 5. Lock brand header link from navigating back to index.html
     const brandLink = document.querySelector(".home-brand a, a.home-brand");
     if (brandLink) {
         brandLink.setAttribute("href", "javascript:void(0)");

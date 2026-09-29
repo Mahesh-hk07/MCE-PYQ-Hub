@@ -268,12 +268,14 @@ def build_admin_student_view_html(raw_html: str, admin_branch: str) -> str:
     # - Hide Home button
     # - Hide Semester button
     # - Replace Branches button with active Department Admin branch pill only
+    # - Rewire Contact link to #contact (stay on current page instead of navigating to index.html)
     def replace_nav(match):
         nav_html = match.group(0)
         nav_html = re.sub(r'<a\s+[^>]*href=["\'][^"\']*index\.html["\'][^>]*>\s*Home\s*</a>\s*', '', nav_html, flags=re.IGNORECASE)
         nav_html = re.sub(r'<a\s+[^>]*href=["\'][^"\']*#(?:search|semester)["\'][^>]*>\s*Semester\s*</a>\s*', '', nav_html, flags=re.IGNORECASE)
         replacement = f'<a href="javascript:void(0)" class="active admin-branch-locked-nav">{safe_branch}</a>'
         nav_html = re.sub(r'<a\s+[^>]*href=["\'][^"\']*#branches["\'][^>]*>\s*Branches\s*</a>', replacement, nav_html, flags=re.IGNORECASE)
+        nav_html = re.sub(r'href=["\'][^"\']*index\.html#contact["\']', 'href="#contact"', nav_html, flags=re.IGNORECASE)
         return nav_html
 
     content = re.sub(r'<nav\s+class=["\']home-navigation["\'].*?</nav>', replace_nav, content, flags=re.DOTALL)
@@ -283,12 +285,15 @@ def build_admin_student_view_html(raw_html: str, admin_branch: str) -> str:
         return f'<div class="branch-breadcrumbs"><span>MCE PYQ Hub</span> &nbsp;/&nbsp; <strong style="color: #38bdf8;">{safe_branch} Department (Admin Student View)</strong></div>'
     content = re.sub(r'<div\s+class=["\']branch-breadcrumbs["\'].*?</div>', replace_breadcrumbs, content, flags=re.DOTALL)
 
-    # 6. Logo link: prevent clicking brand from navigating to index.html in admin student view
+    # 6. Rewire any remaining index.html links to prevent accidental public navigation
     content = re.sub(r'<a\s+[^>]*href=["\']index\.html["\']([^>]*)class=["\']home-brand["\']', r'<div \1class="home-brand"', content, flags=re.IGNORECASE)
+    content = re.sub(r'href=["\'][^"\']*index\.html#contact["\']', 'href="#contact"', content, flags=re.IGNORECASE)
 
     # 7. Ensure fresh client scripts and stylesheets are requested
-    content = content.replace("branch.js?v=10.0", "branch.js?v=11.0")
-    content = content.replace("style.css?v=19.0", "style.css?v=20.0")
+    content = content.replace("branch.js?v=10.0", "branch.js?v=12.0")
+    content = content.replace("branch.js?v=11.0", "branch.js?v=12.0")
+    content = content.replace("style.css?v=19.0", "style.css?v=21.0")
+    content = content.replace("style.css?v=20.0", "style.css?v=21.0")
 
     return content
 
