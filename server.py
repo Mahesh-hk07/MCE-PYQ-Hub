@@ -1818,9 +1818,6 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 if not data.startswith(b"%PDF-"):
                     raise ValueError("Invalid PDF format")
 
-                if is_production() and not is_r2_configured():
-                    raise RuntimeError("Cloudflare R2 storage is required in production on Render. Please configure R2 environment variables.")
-
                 safe_base = re.sub(r"[^A-Za-z0-9._-]", "_", Path(filename).stem)
                 unique_token = secrets.token_hex(4)
                 target_filename = f"{safe_base}_{unique_token}.pdf"
@@ -1866,8 +1863,9 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 })
             except ValueError as error:
                 self.send_json(400, {"error": str(error)})
-            except Exception:
-                self.send_json(500, {"error": "Submission could not be processed"})
+            except Exception as e:
+                print(f"[CONTRIBUTE ERROR] {type(e).__name__}: {str(e)}")
+                self.send_json(500, {"error": f"Submission could not be processed: {str(e)}"})
             return
 
         if request_path == "/api/admin/submissions/approve":
@@ -2061,9 +2059,6 @@ class RequestHandler(SimpleHTTPRequestHandler):
                 data = uploaded_file[1]
                 if not Path(filename).name.lower().endswith(".pdf") or not data.startswith(b"%PDF-"):
                     raise ValueError("The uploaded file must be a valid PDF document")
-
-                if is_production() and not is_r2_configured():
-                    raise RuntimeError("Cloudflare R2 storage is required in production on Render. Please configure R2 environment variables.")
 
                 semester_number = re.match(r"\d+", semester).group()
                 branch_slug = sanitize_branch_slug(branch)
