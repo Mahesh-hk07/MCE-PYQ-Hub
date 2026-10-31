@@ -625,17 +625,44 @@ def search_papers(search_text="", branch_filter=None):
 
         # Search query
         if search_text:
-            pattern = f"%{search_text.strip()}%"
-            conditions.append(
-                """(title LIKE ? COLLATE NOCASE
-                 OR branch LIKE ? COLLATE NOCASE
-                 OR semester LIKE ? COLLATE NOCASE
-                 OR subject LIKE ? COLLATE NOCASE
-                 OR subject_code LIKE ? COLLATE NOCASE
-                 OR cie_number LIKE ? COLLATE NOCASE
-                 OR CAST(year AS TEXT) LIKE ?)"""
-            )
-            params.extend([pattern, pattern, pattern, pattern, pattern, pattern, pattern])
+            cleaned = search_text.strip()
+            pattern = f"%{cleaned}%"
+            words = [w for w in cleaned.split() if w]
+            clean_code = re.sub(r"[\s\-]+", "", cleaned)
+
+            full_cond = """(title LIKE ? COLLATE NOCASE
+                           OR branch LIKE ? COLLATE NOCASE
+                           OR semester LIKE ? COLLATE NOCASE
+                           OR subject LIKE ? COLLATE NOCASE
+                           OR subject_code LIKE ? COLLATE NOCASE
+                           OR REPLACE(REPLACE(subject_code, ' ', ''), '-', '') LIKE ? COLLATE NOCASE
+                           OR cie_number LIKE ? COLLATE NOCASE
+                           OR CAST(year AS TEXT) LIKE ?)"""
+            full_params = [pattern, pattern, pattern, pattern, pattern, f"%{clean_code}%", pattern, pattern]
+
+            if len(words) > 1:
+                multi_conds = []
+                multi_params = []
+                for word in words:
+                    w_pat = f"%{word}%"
+                    w_clean = re.sub(r"[\s\-]+", "", word)
+                    multi_conds.append(
+                        """(title LIKE ? COLLATE NOCASE
+                         OR branch LIKE ? COLLATE NOCASE
+                         OR semester LIKE ? COLLATE NOCASE
+                         OR subject LIKE ? COLLATE NOCASE
+                         OR subject_code LIKE ? COLLATE NOCASE
+                         OR REPLACE(REPLACE(subject_code, ' ', ''), '-', '') LIKE ? COLLATE NOCASE
+                         OR cie_number LIKE ? COLLATE NOCASE
+                         OR CAST(year AS TEXT) LIKE ?)"""
+                    )
+                    multi_params.extend([w_pat, w_pat, w_pat, w_pat, w_pat, f"%{w_clean}%", w_pat, w_pat])
+                and_clause = " AND ".join(multi_conds)
+                conditions.append(f"({full_cond} OR ({and_clause}))")
+                params.extend(full_params + multi_params)
+            else:
+                conditions.append(full_cond)
+                params.extend(full_params)
 
         where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
         query = f"""

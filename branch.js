@@ -514,9 +514,18 @@ function renderFinalPapersView(state) {
 }
 
 function renderSearchResults(searchQuery) {
+    const q = searchQuery.toLowerCase().trim();
+    const qClean = q.replace(/[\s\-]/g, '');
+    const words = q.split(/\s+/).filter(Boolean);
     const visiblePapers = papers.filter(p => {
-        const text = `${p.title} ${p.subject} ${p.subject_code || ''} ${p.semester} ${p.year} ${p.exam_type || ''} ${p.cie_number || ''}`.toLowerCase();
-        return text.includes(searchQuery);
+        const text = `${p.title || ''} ${p.subject || ''} ${p.subject_code || ''} ${p.semester || ''} ${p.year || ''} ${p.exam_type || ''} ${p.cie_number || ''}`.toLowerCase();
+        const codeClean = (p.subject_code || '').toLowerCase().replace(/[\s\-]/g, '');
+        if (text.includes(q) || (qClean && codeClean.includes(qClean))) return true;
+        if (words.length > 1 && words.every(w => {
+            const wClean = w.replace(/[\s\-]/g, '');
+            return text.includes(w) || (wClean && codeClean.includes(wClean));
+        })) return true;
+        return false;
     });
 
     if (paperCount) {
@@ -566,6 +575,7 @@ function renderSearchResults(searchQuery) {
                                         <div class="academic-paper-tags">
                                             <span>🎓 ${escapeHtml(p.semester)}</span>
                                             <span>📅 ${p.year}</span>
+                                            ${p.subject_code ? `<span class="badge-code" style="font-size: 11px; padding: 2px 7px; border-radius: 6px; font-weight: 700;">🏷️ ${escapeHtml(p.subject_code)}</span>` : ""}
                                             ${p.cie_number ? `<span class="cie-pill-badge">${escapeHtml(p.cie_number)}</span>` : ""}
                                             <span>🏛️ ${escapeHtml(p.exam_type || "Autonomous SEE")}</span>
                                         </div>

@@ -135,15 +135,21 @@ async function searchPapers(searchText, branchFilter = activeBranchFilter) {
         clearSearch.hidden = searchText === "";
     }
     
-    // If both empty, clear results
+    // If both empty, clear results and hide dropdown
     if (searchText === "" && branchFilter === "") {
         searchResults.innerHTML = "";
+        searchResults.classList.remove("active");
         return;
     }
 
+    searchResults.classList.add("active");
     searchResults.innerHTML = `
-        <div style="text-align: center; padding: 24px; color: #64748b; font-size: 14px;">
-            <p>Searching the question paper repository...</p>
+        <div class="search-status-box">
+            <div class="search-spinner"></div>
+            <div>
+                <div class="search-status-title">Searching repository...</div>
+                <div class="search-status-sub">Looking up question papers by subject, subject code, or branch</div>
+            </div>
         </div>
     `;
 
@@ -164,39 +170,110 @@ async function searchPapers(searchText, branchFilter = activeBranchFilter) {
 
         if (results.length === 0) {
             searchResults.innerHTML = `
-                <div style="text-align: center; padding: 32px 20px; color: #64748b; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
-                    <p style="font-size: 16px; font-weight: 600; color: #334155; margin-bottom: 4px;">No question papers found</p>
-                    <p style="font-size: 13px; margin: 0;">Try adjusting your branch filter or search term.</p>
+                <div class="search-empty-state">
+                    <div class="search-empty-icon">🔍</div>
+                    <div class="search-empty-title">No question papers found</div>
+                    <p class="search-empty-text">No question papers matching "<strong>${escapeHtml(searchText)}</strong>" were found.</p>
+                    <div class="search-empty-tips">
+                        💡 <strong>Helpful Tips:</strong><br>
+                        • Search by subject code (e.g., <code>21EC503</code>, <code>21MAT11</code>)<br>
+                        • Search by subject name (e.g., <code>Digital Communication</code>, <code>Mathematics</code>)<br>
+                        • Search by semester or department (e.g., <code>5th Sem</code>, <code>ECE</code>, <code>CSE</code>)
+                    </div>
                 </div>
             `;
             return;
         }
 
+        // Header with count & close button
+        const headerEl = document.createElement("div");
+        headerEl.className = "search-results-header";
+        headerEl.innerHTML = `
+            <div class="search-results-count">
+                <span class="search-results-count-icon">📄</span>
+                <span>Found <strong>${results.length}</strong> question paper${results.length === 1 ? "" : "s"}${searchText ? ` matching "<em>${escapeHtml(searchText)}</em>"` : ""}</span>
+            </div>
+            <button type="button" class="search-results-close-btn" id="closeSearchResultsBtn" title="Close search results">
+                <span>Close</span> ✕
+            </button>
+        `;
+        searchResults.appendChild(headerEl);
+
+        const closeBtn = headerEl.querySelector("#closeSearchResultsBtn");
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                searchResults.classList.remove("active");
+                searchResults.innerHTML = "";
+                if (searchBox) searchBox.value = "";
+                if (clearSearch) clearSearch.hidden = true;
+            });
+        }
+
+        const listContainer = document.createElement("div");
+        listContainer.className = "search-cards-list";
+
         results.forEach(function (paper) {
             const resultCard = document.createElement("div");
             resultCard.className = "result-card-v2";
+            
+            const rawFile = paper.file || "";
+            const fileUrl = rawFile.startsWith("/") ? rawFile : "/" + rawFile;
+            
             resultCard.innerHTML = `
                 <div class="result-info">
-                    <h3>${escapeHtml(paper.title)}</h3>
+                    <div class="result-header-row">
+                        <h3 class="result-title">${escapeHtml(paper.title || paper.subject || "Question Paper")}</h3>
+                        ${paper.subject_code ? `
+                            <span class="badge-code" title="Subject Code: ${escapeHtml(paper.subject_code)}">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="16 18 22 12 16 6"></polyline>
+                                    <polyline points="8 6 2 12 8 18"></polyline>
+                                </svg>
+                                ${escapeHtml(paper.subject_code)}
+                            </span>
+                        ` : ""}
+                    </div>
+                    ${paper.subject && paper.subject.toLowerCase() !== (paper.title || "").toLowerCase() ? `
+                        <div class="result-subject-line">
+                            <span class="result-subject-label">Subject:</span>
+                            <span class="result-subject-val">${escapeHtml(paper.subject)}</span>
+                        </div>
+                    ` : ""}
                     <div class="result-meta">
-                        <span class="badge-branch">${escapeHtml(paper.branch)}</span>
-                        <span class="badge-sem">${escapeHtml(paper.semester)}</span>
-                        <span class="badge-year">${paper.year}</span>
-                        ${paper.subject ? `<span style="font-size: 12px; color: #64748b;">${escapeHtml(paper.subject)}</span>` : ""}
+                        <span class="badge-branch">🏛️ ${escapeHtml(paper.branch)}</span>
+                        <span class="badge-sem">🎓 ${escapeHtml(paper.semester)}</span>
+                        <span class="badge-year">📅 ${paper.year}</span>
+                        ${paper.cie_number ? `<span class="badge-cie">📝 ${escapeHtml(paper.cie_number)}</span>` : ""}
+                        ${paper.exam_type && !paper.cie_number ? `<span class="badge-exam">📜 ${escapeHtml(paper.exam_type)}</span>` : ""}
                     </div>
                 </div>
-                <a class="result-btn-pdf" href="${encodeURI(paper.file)}" target="_blank" rel="noopener">
-                    <span>View PDF</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-                </a>
+                <div class="result-actions">
+                    <a class="result-btn-pdf" href="${encodeURI(fileUrl)}" target="_blank" rel="noopener">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        <span>View PDF</span>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                    </a>
+                </div>
             `;
-            searchResults.appendChild(resultCard);
+            listContainer.appendChild(resultCard);
         });
+
+        searchResults.appendChild(listContainer);
     } catch (error) {
         searchResults.innerHTML = `
-            <div style="text-align: center; padding: 24px; color: #dc2626; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca; font-size: 13px;">
-                <p style="margin: 0; font-weight: 600;">Search service temporarily unavailable.</p>
-                <p style="margin: 4px 0 0; color: #7f1d1d;">Ensure the local Python server is running (python server.py).</p>
+            <div class="search-error-state">
+                <div class="search-error-title">Search service temporarily unavailable</div>
+                <p class="search-error-sub">Please ensure the server is running or try again shortly.</p>
             </div>
         `;
     }
@@ -272,6 +349,12 @@ if (searchBox) {
             searchPapers(searchBox.value.trim(), activeBranchFilter);
         }, 180);
     });
+
+    searchBox.addEventListener("focus", function () {
+        if (searchBox.value.trim() && searchResults && searchResults.children.length > 0) {
+            searchResults.classList.add("active");
+        }
+    });
 }
 
 if (clearSearch) {
@@ -283,6 +366,16 @@ if (clearSearch) {
         }
     });
 }
+
+// Close search results dropdown if clicking outside
+document.addEventListener("click", function (event) {
+    const searchContainer = document.querySelector(".home-search-container");
+    if (searchContainer && !searchContainer.contains(event.target)) {
+        if (searchResults) {
+            searchResults.classList.remove("active");
+        }
+    }
+});
 
 // Quick search tags & Semester pills
 document.querySelectorAll("[data-search]").forEach(function (shortcut) {
