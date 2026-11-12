@@ -19,9 +19,203 @@ const clearSearch = document.getElementById("clearSearch");
 const mobileToggle = document.getElementById("mobileToggle");
 const navMenu = document.getElementById("navMenu");
 const backToTopBtn = document.getElementById("backToTop");
+const heroSearchToggle = document.getElementById("heroSearchToggle");
+const heroSearchContainer = document.getElementById("search");
 
 let searchTimeout = null;
 let activeBranchFilter = "";
+
+function setHeroSearchOpen(open, focusInput = false) {
+    if (!heroSearchContainer) return;
+    heroSearchContainer.hidden = !open;
+    const hero = document.querySelector(".premium-home-hero");
+    if (hero) hero.classList.toggle("search-active", open);
+    const strip = document.getElementById("heroInformation");
+    if (strip) {
+        strip.classList.toggle("is-search-hidden", open);
+        if (open) {
+            strip.style.setProperty("display", "none", "important");
+        } else {
+            strip.style.removeProperty("display");
+        }
+    }
+    const heroActions = document.getElementById("heroActions");
+    if (heroActions) {
+        if (open) {
+            heroActions.style.setProperty("display", "none", "important");
+        } else {
+            heroActions.style.removeProperty("display");
+        }
+    }
+    if (heroSearchToggle) {
+        heroSearchToggle.setAttribute("aria-expanded", String(open));
+    }
+    if (open) {
+        if (focusInput && searchBox) {
+            window.requestAnimationFrame(function () { searchBox.focus(); });
+        }
+    } else {
+        if (searchResults) {
+            searchResults.classList.remove("active");
+            searchResults.innerHTML = "";
+        }
+        if (searchBox) searchBox.value = "";
+        if (clearSearch) clearSearch.hidden = true;
+    }
+}
+window.setHeroSearchOpen = setHeroSearchOpen;
+
+if (heroSearchToggle) {
+    heroSearchToggle.addEventListener("click", function () {
+        setHeroSearchOpen(heroSearchContainer ? heroSearchContainer.hidden : true, true);
+    });
+}
+
+const closeHeroSearchBtn = document.getElementById("closeHeroSearchBtn");
+if (closeHeroSearchBtn) {
+    closeHeroSearchBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setHeroSearchOpen(false);
+    });
+}
+
+document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") {
+        if (heroSearchContainer && !heroSearchContainer.hidden) {
+            setHeroSearchOpen(false);
+        }
+    }
+});
+
+function openSearchFromHash() {
+    if (window.location.hash === "#search") {
+        setHeroSearchOpen(true, false);
+    }
+}
+
+window.addEventListener("hashchange", openSearchFromHash);
+openSearchFromHash();
+
+window.toggleNightMode = function () {
+    const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    try {
+        localStorage.setItem("mce-theme", nextTheme);
+        localStorage.setItem("mce_theme", nextTheme);
+    } catch (e) {}
+    const button = document.getElementById("themeToggleBtn");
+    if (button) {
+        button.classList.toggle("dark-active", nextTheme === "dark");
+        const label = button.querySelector("span");
+        if (label) label.textContent = nextTheme === "dark" ? "Day Mode" : "Night Mode";
+        button.setAttribute("aria-pressed", String(nextTheme === "dark"));
+        const svg = button.querySelector("svg");
+        if (svg) {
+            svg.innerHTML = nextTheme === "dark"
+                ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
+                : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+    }
+};
+
+(function restoreThemePreference() {
+    let savedTheme = "dark";
+    try {
+        savedTheme = localStorage.getItem("mce-theme") || localStorage.getItem("mce_theme") || "dark";
+    } catch (e) {}
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    const button = document.getElementById("themeToggleBtn");
+    if (button) {
+        button.classList.toggle("dark-active", savedTheme === "dark");
+        const label = button.querySelector("span");
+        if (label) label.textContent = savedTheme === "dark" ? "Day Mode" : "Night Mode";
+        button.setAttribute("aria-pressed", String(savedTheme === "dark"));
+        const svg = button.querySelector("svg");
+        if (svg) {
+            svg.innerHTML = savedTheme === "dark"
+                ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
+                : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+        }
+    }
+})();
+
+(function initializePremiumHeroMotion() {
+    const hero = document.querySelector(".premium-home-hero");
+    const strip = hero ? hero.querySelector(".premium-information-strip") : null;
+    const artwork = hero ? hero.querySelector(".premium-hero-artwork") : null;
+    if (!hero || !strip || !artwork) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    let heroVisible = true;
+    let heroRect = null;
+    let pointerFrame = 0;
+    let pendingX = 0;
+    let pendingY = 0;
+
+    if (reducedMotion.matches) {
+        strip.classList.add("is-revealed");
+        return;
+    }
+
+    hero.classList.add("motion-ready");
+    window.requestAnimationFrame(function () {
+        hero.classList.add("motion-entered");
+    });
+
+    const visibilityObserver = new IntersectionObserver(function (entries) {
+        heroVisible = Boolean(entries[0] && entries[0].isIntersecting) && !document.hidden;
+        hero.classList.toggle("hero-motion-active", heroVisible);
+        if (!heroVisible) scheduleParallax(0, 0);
+    }, { rootMargin: "0px", threshold: 0.01 });
+    visibilityObserver.observe(hero);
+
+    const stripObserver = new IntersectionObserver(function (entries, observer) {
+        if (entries.some(function (entry) { return entry.isIntersecting; })) {
+            strip.classList.add("is-revealed");
+            observer.unobserve(strip);
+        }
+    }, { threshold: 0.25 });
+    stripObserver.observe(strip);
+
+    function scheduleParallax(x, y) {
+        pendingX = x;
+        pendingY = y;
+        if (pointerFrame) return;
+        pointerFrame = window.requestAnimationFrame(function () {
+            hero.style.setProperty("--hero-parallax-x", pendingX.toFixed(2) + "px");
+            hero.style.setProperty("--hero-parallax-y", pendingY.toFixed(2) + "px");
+            artwork.style.transform = "translate3d(" + pendingX.toFixed(2) + "px," + pendingY.toFixed(2) + "px,0)";
+            pointerFrame = 0;
+        });
+    }
+
+    if (finePointer.matches) {
+        hero.addEventListener("pointerenter", function () {
+            heroRect = hero.getBoundingClientRect();
+        }, { passive: true });
+        hero.addEventListener("pointermove", function (event) {
+            if (!heroVisible) return;
+            if (!heroRect) heroRect = hero.getBoundingClientRect();
+            const normalizedX = Math.max(-1, Math.min(1, ((event.clientX - heroRect.left) / heroRect.width - .5) * 2));
+            const normalizedY = Math.max(-1, Math.min(1, ((event.clientY - heroRect.top) / heroRect.height - .5) * 2));
+            scheduleParallax(normalizedX * 8, normalizedY * 6);
+        }, { passive: true });
+        hero.addEventListener("pointerleave", function () {
+            heroRect = null;
+            scheduleParallax(0, 0);
+        }, { passive: true });
+        window.addEventListener("resize", function () { heroRect = null; }, { passive: true });
+    }
+
+    document.addEventListener("visibilitychange", function () {
+        heroVisible = !document.hidden && hero.getBoundingClientRect().bottom > 0;
+        hero.classList.toggle("hero-motion-active", heroVisible);
+        if (!heroVisible) scheduleParallax(0, 0);
+    });
+})();
 
 // Mobile menu toggle
 if (mobileToggle && navMenu) {
@@ -44,6 +238,7 @@ document.addEventListener("keydown", (event) => {
     if ((event.key === "/" || (event.ctrlKey && event.key.toLowerCase() === "k")) && document.activeElement !== searchBox) {
         if (searchBox) {
             event.preventDefault();
+            setHeroSearchOpen(true, false);
             searchBox.focus();
             searchBox.scrollIntoView({ behavior: "smooth", block: "center" });
         }
@@ -139,8 +334,26 @@ async function searchPapers(searchText, branchFilter = activeBranchFilter) {
     if (searchText === "" && branchFilter === "") {
         searchResults.innerHTML = "";
         searchResults.classList.remove("active");
+        const strip = document.getElementById("heroInformation");
+        if (strip && (!heroSearchContainer || heroSearchContainer.hidden)) {
+            strip.classList.remove("is-search-hidden");
+            strip.style.removeProperty("display");
+        }
         return;
     }
+
+    if (heroSearchContainer && heroSearchContainer.hidden) {
+        setHeroSearchOpen(true, false);
+    }
+    const hero = document.querySelector(".premium-home-hero");
+    if (hero) hero.classList.add("search-active");
+    const strip = document.getElementById("heroInformation");
+    if (strip) {
+        strip.classList.add("is-search-hidden");
+        strip.style.setProperty("display", "none", "important");
+    }
+    const heroActions = document.getElementById("heroActions");
+    if (heroActions) heroActions.style.setProperty("display", "none", "important");
 
     searchResults.classList.add("active");
     searchResults.innerHTML = `
@@ -201,11 +414,10 @@ async function searchPapers(searchText, branchFilter = activeBranchFilter) {
 
         const closeBtn = headerEl.querySelector("#closeSearchResultsBtn");
         if (closeBtn) {
-            closeBtn.addEventListener("click", () => {
-                searchResults.classList.remove("active");
-                searchResults.innerHTML = "";
-                if (searchBox) searchBox.value = "";
-                if (clearSearch) clearSearch.hidden = true;
+            closeBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setHeroSearchOpen(false);
             });
         }
 
@@ -367,12 +579,16 @@ if (clearSearch) {
     });
 }
 
-// Close search results dropdown if clicking outside
+// Close search results dropdown and search bar if clicking outside
 document.addEventListener("click", function (event) {
     const searchContainer = document.querySelector(".home-search-container");
+    const toggleBtn = document.getElementById("heroSearchToggle");
     if (searchContainer && !searchContainer.contains(event.target)) {
         if (searchResults) {
             searchResults.classList.remove("active");
+        }
+        if (heroSearchContainer && !heroSearchContainer.hidden && (!toggleBtn || !toggleBtn.contains(event.target))) {
+            setHeroSearchOpen(false);
         }
     }
 });
@@ -381,6 +597,7 @@ document.addEventListener("click", function (event) {
 document.querySelectorAll("[data-search]").forEach(function (shortcut) {
     shortcut.addEventListener("click", function () {
         if (searchBox) {
+            setHeroSearchOpen(true, false);
             searchBox.value = shortcut.dataset.search;
             searchPapers(searchBox.value, activeBranchFilter);
             searchBox.scrollIntoView({ behavior: "smooth", block: "center" });

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 
 <head>
     
@@ -10,13 +10,14 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=22.0">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=24.2">
+    <link rel="stylesheet" href="library-preview/library.css?v=2.2">
         <!-- ================= PWA METAS & MANIFEST ================= -->
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" type="image/png" href="/icons/favicon.png">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-    <meta name="theme-color" content="#0e306a">
+    <meta name="theme-color" content="#031c1b">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,20 +34,30 @@
                 <img src="mce-logo.png" alt="Malnad College of Engineering Logo" class="home-brand-logo">
             </div>
             <div class="home-brand-text">
-                <h1>Malnad College of Engineering, Hassan</h1>
+                <h1>MCE <span>PYQ Hub</span></h1>
+                <p>Malnad College of Engineering, Hassan</p>
             </div>
         </div>
 
         <nav class="home-navigation">
             <a href="index.html" class="active">Home</a>
             <a href="#branches">Branches</a>
-            <a href="#search">Semester</a>
+            <a href="#branches">Semester</a>
+            <a href="#about">About</a>
             <a href="#contact">Contact</a>
-            <button type="button" id="themeToggleBtn" onclick="toggleNightMode()" class="theme-toggle-btn" title="Toggle Night Study Mode">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            <button type="button" id="themeToggleBtn" onclick="toggleNightMode()" class="theme-toggle-btn dark-active" title="Toggle Day/Night Study Mode" aria-pressed="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f4ce6e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
-                <span>Night Mode</span>
+                <span>Day Mode</span>
             </button>
                         <button type="button" onclick="openRequestModal()" class="home-nav-request" title="Ask for previous question papers you need">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -67,113 +78,81 @@
         </nav>
     </header>
 
-    <!-- ================= HERO ================= -->
-    <section class="home-hero">
-        <!-- BACKGROUND IMAGE -->
-        <div class="home-hero-image"></div>
+    <!-- ================= PREMIUM HERO ================= -->
+    <section class="home-hero premium-home-hero" aria-labelledby="premiumHeroTitle">
+        <div class="premium-hero-artwork" aria-hidden="true"><div class="home-hero-image premium-hero-image"></div></div>
+        <div class="home-hero-overlay premium-hero-overlay" aria-hidden="true"></div>
 
-        <!-- DARK BLUE LEFT GRADIENT OVERLAY -->
-        <div class="home-hero-overlay"></div>
-
-        <!-- LEFT CONTENT -->
-        <div class="home-hero-content">
-            <div class="home-badge">
-                LEARN SMART. SCORE BETTER.
+        <div class="home-hero-content premium-hero-content">
+            <p class="premium-hero-kicker"><span aria-hidden="true">✦</span> MCE PYQ HUB</p>
+            <h2 id="premiumHeroTitle"><span>Previous Year</span><em>Question Papers</em><span>for MCE Students</span></h2>
+            <div class="premium-gold-stroke" aria-hidden="true"></div>
+            <p class="home-description premium-hero-description">Browse available MCE previous year question papers, organized by branch and semester.</p>
+            <div class="premium-hero-actions" id="heroActions">
+                <a class="premium-primary-cta" href="#branches">Explore PYQs <span aria-hidden="true">→</span></a>
+                <button type="button" class="premium-secondary-cta" onclick="openRequestModal()"><span aria-hidden="true">↓</span> Request a PYQ</button>
+                <button type="button" id="heroSearchToggle" class="premium-search-toggle" aria-expanded="false" aria-controls="search" title="Search question papers">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span class="sr-only">Open paper search</span>
+                </button>
             </div>
 
-            <h2>MCE PYQ Hub</h2>
-
-            <h3>Malnad College of Engineering, Hassan</h3>
-
-            <div class="home-line"></div>
-
-            <p class="home-description">
-                Your one-stop destination for Previous Year<br>Question Papers.
-            </p>
-
-            <!-- FEATURE PILLS BAR -->
-            <div class="home-hero-features">
-                <div class="home-hero-feat">
-                    <div class="home-feat-icon-box">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                            <polyline points="9 12 11 14 15 10"></polyline>
+            <div class="home-search-container premium-hero-search" id="search" hidden>
+                <div class="home-search-box">
+                    <span class="home-search-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f4cb61" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                    </div>
-                    <span>PYQs</span>
+                    </span>
+                    <input
+                        type="text"
+                        id="searchBox"
+                        placeholder="Search question papers by subject, semester, branch..."
+                        autocomplete="off"
+                    >
+                    <button
+                        type="button"
+                        id="clearSearch"
+                        class="home-search-clear"
+                        title="Clear search text"
+                        aria-label="Clear search text"
+                        hidden
+                    >
+                        ✕
+                    </button>
+                    <button
+                        type="button"
+                        id="homeSearchBtn"
+                    >
+                        Search
+                    </button>
+                    <button
+                        type="button"
+                        id="closeHeroSearchBtn"
+                        class="hero-search-close-btn"
+                        title="Close search"
+                        aria-label="Close search"
+                    >
+                        ✕
+                    </button>
                 </div>
-
-                <div class="home-hero-feat">
-                    <div class="home-feat-icon-box">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                        </svg>
-                    </div>
-                    <span>All<br>Branches</span>
-                </div>
-
-                <div class="home-hero-feat">
-                    <div class="home-feat-icon-box">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                        </svg>
-                    </div>
-                    <span>Semester<br>Wise</span>
-                </div>
-
-                <div class="home-hero-feat feat-active">
-                    <div class="home-feat-icon-box active-circle">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                        </svg>
-                    </div>
-                    <span>Easy<br>Access</span>
-                </div>
+                <div id="searchResults" class="home-search-results" aria-live="polite"></div>
             </div>
         </div>
 
-        <!-- SEARCH BAR -->
-        <div class="home-search-container" id="search">
-            <div class="home-search-box">
-                <span class="home-search-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </span>
-                <input
-                    type="text"
-                    id="searchBox"
-                    placeholder="Search question papers by subject, semester, branch..."
-                    autocomplete="off"
-                >
-                <button
-                    type="button"
-                    id="clearSearch"
-                    class="home-search-clear"
-                    title="Clear search"
-                    aria-label="Clear search"
-                    hidden
-                >
-                    ✕
-                </button>
-                <button
-                    type="button"
-                    id="homeSearchBtn"
-                >
-                    Search
-                </button>
-            </div>
-            <div id="searchResults" class="home-search-results" aria-live="polite"></div>
-        </div>
+        <section class="premium-information-strip" id="heroInformation" aria-label="Repository features">
+            <article><span class="premium-strip-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="m3 13 13-8 13 8-13 8L3 13Zm4 6 9 6 9-6M7 24l9 6 9-6"/></svg></span><div><strong>Branch-wise</strong><span>All MCE departments</span></div></article>
+            <article><span class="premium-strip-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><rect x="4" y="7" width="24" height="22" rx="2"/><path d="M10 3v8M22 3v8M4 14h24M10 19h3m5 0h3m-11 5h3"/></svg></span><div><strong>Semester-wise</strong><span>Organised archives</span></div></article>
+            <article><span class="premium-strip-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 3 27 7v9c0 7-5 11-11 14C10 27 5 23 5 16V7L16 3Z"/><path d="m10 16 4 4 8-9"/></svg></span><div><strong>Verified</strong><span>Published resources</span></div></article>
+            <article><span class="premium-strip-icon" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none"><path d="M16 3v18m-6-6 6 6 6-6M4 22v7h24v-7"/></svg></span><div><strong>Direct Access</strong><span>Preview and download</span></div></article>
+        </section>
     </section>
 
 
     <!-- ================= BRANCHES ================= -->
     <section class="home-branches-section" id="branches">
-        <div class="home-section-heading">
+        <div class="home-section-heading" hidden>
             <div class="home-explore-badge">
                 <span class="badge-sparkle">✨</span>
                 <span>ACADEMIC DEPARTMENTS</span>
@@ -182,7 +161,39 @@
             <p>Select your department to access curated semester-wise previous year question papers</p>
         </div>
 
-        <div class="home-branches">
+        <div class="library-shell" id="libraryShell" data-embedded="true">
+            <canvas id="libraryCanvas" aria-label="Interactive 3D MCE Library. Enter, then select a department bookshelf." tabindex="0"></canvas>
+            <header class="library-topbar">
+                <span class="brand" aria-hidden="true"><span class="brand-mark">MCE</span><span><strong>PYQ HUB</strong><small>3D LIBRARY</small></span></span>
+                <button id="soundToggle" class="icon-button" type="button" aria-pressed="false" title="Toggle ambient sound">Sound off</button>
+            </header>
+            <section id="welcomePanel" class="welcome-panel" aria-labelledby="welcomeTitle">
+                <p class="eyebrow">THE ACADEMIC ARCHIVE</p><h1 id="welcomeTitle">MCE LIBRARY</h1>
+                <p>Walk through the doors and explore eight departmental collections.</p>
+                <button id="enterButton" class="primary-button" type="button"><span>Enter Library</span><span aria-hidden="true">→</span></button>
+                <p class="microcopy">Drag to look around · Scroll to move · Use arrow keys</p>
+            </section>
+            <section id="insideHud" class="inside-hud" aria-label="Library navigation" hidden>
+                <div class="hud-copy"><p class="eyebrow">MCE COLLECTIONS</p><h2 id="hudTitle">Choose a department</h2><p id="hudDescription">Select a glowing bookshelf or use the department directory.</p></div>
+                <div id="departmentDirectory" class="department-directory" role="list"></div>
+                <div class="hud-actions"><button id="entranceButton" class="secondary-button" type="button">← Back to entrance</button><button id="overviewButton" class="secondary-button" type="button">Library overview</button></div>
+            </section>
+            <div id="focusCard" class="focus-card" hidden>
+                <p class="eyebrow">DEPARTMENT COLLECTION</p><h2 id="focusName"></h2><p id="focusFullName"></p>
+                <a id="openDepartment" class="primary-button" href="#">Open semester archive <span aria-hidden="true">→</span></a>
+                <button id="closeFocus" class="text-button" type="button">Return to aisle</button>
+            </div>
+            <div id="loadingPanel" class="loading-panel" role="status"><span class="loader" aria-hidden="true"></span><span>Preparing the library…</span></div>
+            <p id="statusMessage" class="sr-only" aria-live="polite"></p>
+            <section id="fallback" class="fallback" hidden>
+                <p class="eyebrow">LIGHTWEIGHT DIRECTORY</p><h1>MCE Library</h1><p>Your browser cannot display the 3D library. Every original department remains available below.</p>
+                <nav aria-label="Engineering departments">
+                    <a href="cse.html"><strong>CSE</strong><span>Computer Science & Engineering</span></a><a href="cse-aiml.html"><strong>CSE (AI & ML)</strong><span>Artificial Intelligence & Machine Learning</span></a><a href="csbs.html"><strong>CSBS</strong><span>Computer Science & Business Systems</span></a><a href="ece.html"><strong>ECE</strong><span>Electronics & Communication Engineering</span></a><a href="eee.html"><strong>EEE</strong><span>Electrical & Electronics Engineering</span></a><a href="mechanical.html"><strong>Mechanical</strong><span>Mechanical Engineering</span></a><a href="civil.html"><strong>Civil</strong><span>Civil Engineering</span></a><a href="first-year.html"><strong>1st Year</strong><span>First Year Engineering</span></a>
+                </nav>
+            </section>
+        </div>
+
+        <div class="home-branches" hidden aria-hidden="true">
             <!-- CSE -->
             <a href="cse.html" class="home-branch-card cse-card">
                 <div class="branch-card-accent"></div>
@@ -585,8 +596,9 @@
     </div>
 
     <!-- JAVASCRIPT -->
-    <script src="script.js?v=7.0"></script>
+    <script src="script.js?v=8.8"></script>
     <script src="study-companion.js?v=2.0"></script>
     <script src="request-paper.js?v=2.0"></script>
+    <script src="library-preview/loader.js?v=2.2"></script>
 </body>
 </html>
